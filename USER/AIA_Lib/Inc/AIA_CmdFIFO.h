@@ -45,6 +45,7 @@ typedef struct _CMDFIFO
 
 
 
+
 /* Exported functions ------------------------------------------------------- */
 void InitCmdFIFO(CMDFIFO *cmdFifo);
 void PutCmdToFIFO(CMDFIFO *cmdFifo);

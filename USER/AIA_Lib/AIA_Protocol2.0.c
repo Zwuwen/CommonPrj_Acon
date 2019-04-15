@@ -18,10 +18,12 @@
 #include "AIA_CmdFIFO.h" 
 #include "AIA_Bootload.h"
 #include "AIA_ModuleCore.h"
+#include "AIA_ErrorCode.h"
 
 /* Private function prototypes -----------------------------------------------*/
 void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg);
-void ProcessNewCmd(AIAMODULE *module);
+int ProcessNewCmd(AIAMODULE *module);
+
 
 
 /**
@@ -109,13 +111,74 @@ void AIA_Protocol2_Handle(AIAMODULE *module)
 	if(GetCmdFromFIFO(&(module->fifo)) == FALSE)
 		return;
 	
+	module->recvFrame = (FRAMEFORMAT*)module->fifo.pOutBuf;
 	ProcessNewCmd(module);
-	
 }
 
 
-void ProcessNewCmd(AIAMODULE *module)
+
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int RA_Process(AIAMODULE *module)
+{ 
+	return PASS;
+}
+
+
+
+
+
+int ProcessNewCmd(AIAMODULE *module)
 {
+	int ret;
+	int cmdWord;
+	FRAMEFORMAT *pFrame;
+	char expectIdChar;
+	
+	ret = FAIL;
+	
+	pFrame = module->recvFrame;
+	expectIdChar = (pFrame->bcflag == 0) ? module->addressChar : module->boardcastIdChar;
+	
+	if(pFrame->devIdChar != expectIdChar)	/* check address*/
+		return ERR_ADDRESS;
+	
+	if((pFrame->sequence != '0') && 		/*'0' means needn't match seq*/
+	   (pFrame->sequence != module->sequence))   /*check sequence*/
+	{
+		return ERR_SEQUENCE;
+	}
+	
+	cmdWord = UPCASE2INT(pFrame->cmdHigh, pFrame->cmdLow);
+	
+	
+	if(pFrame->bcflag == 1) /*board cast cmd only support the RA*/
+	{
+		switch(cmdWord)
+		{
+			CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address.*/	
+			default:
+			ret = RESPONSE_IN_PROCESS;
+			break;	
+		}
+		return ret;
+	}
+	
+	/*normal cmd*/
+	switch(cmdWord)
+	{
+		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*∂¡»°∞Ê±æ∫≈*/
+		
+		default:
+			ret = ERR_CMDNOTIMPLEMENT;
+		break;		
+	}
+
+	return ret;
+	
 	
 }
 

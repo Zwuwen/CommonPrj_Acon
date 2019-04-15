@@ -35,18 +35,34 @@ extern const char IdChar[];
 
 
 /* Exported typedef ------------------------------------------------------------*/
+typedef struct _FRAMEFORMAT
+{
+	char len;
+	char bcflag; /*broadcast cmd*/
+	char frameHead;
+	char devIdChar;
+	char sequence;
+	char cmdHigh;
+	char cmdLow;
+	char buf[COMMANDLENGTH-7];
+}FRAMEFORMAT;
+
+
 typedef	struct
 {
 	int address;	/**/
-	
 	char addressChar;
-	char dummys[3];
+	char boardcastIdChar;
+	char sequence; /* '1'~ '9' : '0' means needn't to match seq.*/
+	char dummys[2];
 	
 	int normalRecvSignature;
 	int boardcastRecvSignature;
 	
 	char Name[20];
 	char responseBuf[100];
+	
+	FRAMEFORMAT *recvFrame;
 	
 	CMDFIFO fifo;
 	

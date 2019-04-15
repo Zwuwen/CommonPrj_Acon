@@ -16,9 +16,13 @@
 #ifndef __AIA_PROTOCOL_H
 #define	__AIA_PROTOCOL_H
 
-#include "stm32f10x.h"
 
 
+#define UPCASE2INT(A,B) ((A-'A')*26u + (B-'A'))
+#define CASE_REGISTER_CMD_PROCESS(AB,A,B) 		case UPCASE2INT(A,B):\
+												ret = AB##_Process(module);\
+												break
+													
 
 /* Exported functions ------------------------------------------------------------*/
 int ParseCmdParam(char *cmd, int *val, int num);

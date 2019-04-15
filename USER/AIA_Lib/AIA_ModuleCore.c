@@ -13,6 +13,7 @@
   */ 
   
 #include "AIA_ModuleCore.h" 
+#include "AIA_ErrorCode.h"
 #include "string.h"
 
 AIAMODULE ModuleCore;
@@ -38,8 +39,15 @@ void ModuleCore_Init(void)
 
 
 
-void ModuleCore_HandleCmd(AIAMODULE *module)
+int ModuleCore_HandleCmd(AIAMODULE *module)
 {
+
+	
+	
+	
+	
+
+	
 	
 
 }
