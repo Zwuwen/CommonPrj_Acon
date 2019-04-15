@@ -16,9 +16,48 @@
 #include "AIA_Utilities.h" 
 #include "CAN_Driver.h"
 #include "AIA_CmdFIFO.h" 
+#include "AIA_Bootload.h"
+#include "AIA_ModuleCore.h"
+
+/* Private function prototypes -----------------------------------------------*/
+void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg);
+void ProcessNewCmd(AIAMODULE *module);
 
 
-void ReceiveCanFrame_InIrq(CMDFIFO *cmdFifo, CanRxMsg *rxMsg)
+/**
+  * @brief  
+  * @param  
+  * @retval None
+  */
+void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg)
+{
+	
+	if(BootLoad_ServerInIrq(rxMsg, ModuleCore.address) == 1) 
+		return;
+	
+	if(rxMsg->IDE != CAN_ID_STD)
+		return;
+	
+	if(rxMsg->StdId == ModuleCore.normalRecvSignature)
+	{
+		ReceiveCanFrame_InIrq(&ModuleCore, rxMsg);
+		return;
+	}
+	
+	if(rxMsg->StdId == ModuleCore.boardcastRecvSignature)
+	{
+		
+		/*boardcast frame don't need return.*/
+	}
+	
+	
+	
+}
+
+
+
+
+void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg)
 {
 	int i;
 	
@@ -26,41 +65,62 @@ void ReceiveCanFrame_InIrq(CMDFIFO *cmdFifo, CanRxMsg *rxMsg)
 	{
 		if(rxMsg->Data[i] == '&')
 		{
-			cmdFifo->flag.Bit.hasFrameHead = 1;
-			cmdFifo->pRecvBuf[1] = '&';	    /*avoid copy frame*/
-			cmdFifo->currRecvLength = 2;	/*Cmd[0] is length*/
-			cmdFifo->flag.Bit.receiveCompleted = 0;	
+			module->fifo.flag.Bit.hasFrameHead = 1;
+			module->fifo.pRecvBuf[1] = '&';	    /*avoid copy frame*/
+			module->fifo.currRecvLength = 2;	/*Cmd[0] is length*/
+			module->fifo.flag.Bit.receiveCompleted = 0;	
 		}
 		else if(rxMsg->Data[i] == '\r')
 		{
-			if(cmdFifo->flag.Bit.hasFrameHead == 1)
+			if(module->fifo.flag.Bit.hasFrameHead == 1)
 			{
-				cmdFifo->flag.Bit.hasFrameHead = 0;
-				cmdFifo->pRecvBuf[cmdFifo->currRecvLength] = '\r';
-				cmdFifo->pRecvBuf[cmdFifo->currRecvLength+1] = '\0';
-				cmdFifo->pRecvBuf[0] = cmdFifo->currRecvLength - 1;
-				if(cmdFifo->pRecvBuf[3] == 'Z')
+				module->fifo.flag.Bit.hasFrameHead = 0;
+				module->fifo.pRecvBuf[module->fifo.currRecvLength] = '\r';
+				module->fifo.pRecvBuf[module->fifo.currRecvLength+1] = '\0';
+				module->fifo.pRecvBuf[0] = module->fifo.currRecvLength - 1;
+				
+				if((module->fifo.pRecvBuf[3] == 'Z') && (module->fifo.pRecvBuf[4] == 'Z'))
 				{
-					ClearCmdFIFO(cmdFifo);
-					//Flag.Bit.Terminate = 1;
+					ClearCmdFIFO(&(module->fifo));
+					module->flag.Bit.terminate = 1;
 				}
-				PutCmdToFIFO(cmdFifo);
-				cmdFifo->flag.Bit.receiveCompleted = 1;
+				
+				PutCmdToFIFO(&(module->fifo));
+				module->fifo.flag.Bit.receiveCompleted = 1;
 			}
 		}
 		else
 		{
-			if(cmdFifo->currRecvLength < COMMANDLENGTH)
-				cmdFifo->pRecvBuf[cmdFifo->currRecvLength++] = rxMsg->Data[i];
+			if(module->fifo.currRecvLength < COMMANDLENGTH)
+				module->fifo.pRecvBuf[module->fifo.currRecvLength++] = rxMsg->Data[i];
 			else 
-				cmdFifo->flag.Bit.hasFrameHead = 0;
+				module->fifo.flag.Bit.hasFrameHead = 0;
 		}
 	}
 }
 
-  
-  
 
+
+void AIA_Protocol2_Handle(AIAMODULE *module)
+{
+	if(module->fifo.cmdNumber == 0)
+		return;
+	
+	if(GetCmdFromFIFO(&(module->fifo)) == FALSE)
+		return;
+	
+	ProcessNewCmd(module);
+	
+}
+
+
+void ProcessNewCmd(AIAMODULE *module)
+{
+	
+}
+
+  
+ 
 //void ResponseCmdByCan(int ret)
 //{
 //	char AnswerStr[20];

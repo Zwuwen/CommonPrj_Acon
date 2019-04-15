@@ -24,7 +24,6 @@ static void CAN_Configuration()
     GPIO_InitTypeDef  	   GPIO_InitStructure;
 	CAN_InitTypeDef        CAN_InitStructure;
 
-
 	////////////////CAN RCC Init//////////////////
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIO_CAN, ENABLE);

@@ -31,10 +31,17 @@ const char IdChar[] = { '0','1','2','3','4','5','6','7','8','9',
 void ModuleCore_Init(void)
 {
 	strcpy(ModuleCore.Name, MODULE_NAME);
-	ModuleCore.Flag.Bit.init = 1;
+	ModuleCore.flag.Bit.init = 1;
+}
+
+
+
+
+
+void ModuleCore_HandleCmd(AIAMODULE *module)
+{
 	
-	
-	
+
 }
 
 

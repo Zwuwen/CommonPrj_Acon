@@ -23,7 +23,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
-#include "AIA_Bootload.h"
 
 
 
@@ -215,24 +214,15 @@ void TIM3_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
+void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg);
 void USB_LP_CAN1_RX0_IRQHandler(void)
 {
 	CanRxMsg rxMessage;
 	
 	CAN_Receive(CAN1, CAN_FIFO0, &rxMessage);
-
-//	if(BootLoad_ServerInIrq(&rxMessage) == 1) return;
 	
-//	if(RxMessage.IDE != CAN_ID_STD) return;
-
-//	if(RxMessage.StdId == (ModuleAdress | 0x80))
-//	{
-//		ReceiveCanFrame();
-//	}
-//	else if(RxMessage.StdId == (0 | 0x80))
-//	{
-//		ReceiveCanFrame();
-//	}	
+	DistributeNewCanFrame_InIrq(&rxMessage);
+	
 }
 
 

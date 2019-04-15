@@ -15,6 +15,8 @@
 #define	__AIA_MODULECORE_H
 
 #include "stm32f10x.h"
+#include "AIA_CmdFIFO.h"
+
 
 
 /* Exported macro ------------------------------------------------------------*/
@@ -36,17 +38,26 @@ extern const char IdChar[];
 typedef	struct
 {
 	int address;	/**/
+	
 	char addressChar;
+	char dummys[3];
+	
+	int normalRecvSignature;
+	int boardcastRecvSignature;
+	
 	char Name[20];
 	char responseBuf[100];
+	
+	CMDFIFO fifo;
 	
 	/*Flags*/
 	union{ 
 		struct{
 			unsigned init 			: 1;  	/*initialize.*/
+			unsigned terminate		: 1;    /*terminate sign.*/
 		}Bit;
 		int Allbits;
-	}Flag;
+	}flag;
 }AIAMODULE;
 
 extern AIAMODULE ModuleCore;
