@@ -1,3 +1,17 @@
+/**
+  ******************************************************************************
+  * @file    ADC_Driver.c 
+  * @author  AIA Team
+  * @version V1.1
+  * @created    15-April-2019
+  * @lastModify 
+  * @brief   ADC Driver:  
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
+  ******************************************************************************/
+
 #include "ADC_Driver.h"
 
 uint8_t* u16toa(uint8_t *dest, u16 num);

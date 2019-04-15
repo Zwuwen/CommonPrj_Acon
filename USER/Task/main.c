@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * @file    Project/STM32F10x_StdPeriph_Template/main.c 
-  * @author  MCD Application Team
+  * @file    main.c 
+  * @author  AIA Team
   * @version V3.5.0
   * @date    08-April-2011
   * @brief   Main program body
@@ -59,7 +59,14 @@ int main(void)
 
 	//////Driver Initialize///////////
 	IIC_Driver_Init();
+	CAN_Driver_Init();
 	
+	
+	//////Module Initialize///////////	
+	ModuleCore_Init();
+	
+	//////Can Filter///////////	
+	//TODO:
 	
 	
 
@@ -104,7 +111,7 @@ int main(void)
   * @retval None
   */
 void NVIC_Config(void)  
-{  NVIC_InitTypeDef  NVIC_InitStructure;  
+{  
 
    #ifdef  VECT_TAB_RAM  
 	/* Set the Vector Table base location at 0x20000000 */ 

@@ -180,28 +180,12 @@ void SysTick_Handler(void)
   */
 void TIM2_IRQHandler(void)
 {  
-	if( TIM_GetITStatus(TIM2,TIM_IT_Update) != RESET ) 	   //判断是否定时中断  10ms定时
-   	{
-	
-		TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);     //必须清除中断标志位否则一直中断
-    }
 }
-
-
-
 
 
 
 void TIM1_IRQHandler(void)
 {
-}
-
-
-
-void TIM3_IRQHandler(void)
-{
-
-	
 }
 
 
@@ -216,10 +200,10 @@ void TIM4_IRQHandler(void)
   * @brief  This function handles TIM3 interrupt request.
   * @param  None
   * @retval None
-//  */
-//void TIM3_IRQHandler(void)
-//{ 
-//}
+  */
+void TIM3_IRQHandler(void)
+{ 
+}
 
 
 

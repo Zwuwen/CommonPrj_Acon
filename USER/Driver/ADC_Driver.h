@@ -1,5 +1,18 @@
-#ifndef __ADC_H
-#define	__ADC_H
+/**
+  ******************************************************************************
+  * @file    ADC_Driver.c 
+  * @author  AIA Team
+  * @version V1.1
+  * @created    15-April-2019
+  * @lastModify 
+  * @brief   ADC Driver:  
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
+  ******************************************************************************/
+#ifndef __ADC_DRIVER_H
+#define	__ADC_DRIVER_H
 
 #include "AIA_Utilities.h"
 

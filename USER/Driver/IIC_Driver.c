@@ -3,14 +3,14 @@
   * @file    IIC_Driver.c 
   * @author  Bowen.He
   * @version V1.1
-  * @date    20-November-2015
+  * @created    20-November-2015
   * @lastModify 15-April-2019
   * @brief   IIC Driver:  Each while statement has timeout.
   ******************************************************************************
   * @attention
   *
   * A typical IIC Driver contains 2 files. There are :
-  *	iic_driver.c: six functions. I2C_Configuration should be called before other
+  *	iic_driver.c: six functions. IIC_Driver_Init should be called before other
   *			  	  functions were used.
   * iic_driver.h: In this file, user can modify some configuration.
   * 

@@ -1,5 +1,18 @@
-#ifndef __FLASH_H
-#define	__FLASH_H
+/**
+  ******************************************************************************
+  * @file    Flash_Driver.c 
+  * @author  AIA Team
+  * @version V1.1
+  * @created    15-April-2019
+  * @lastModify 
+  * @brief   Flash Driver:  
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
+  ******************************************************************************/
+#ifndef __FLASH_DRIVER_H
+#define	__FLASH_DRIVER_H
 
 #include "AIA_Utilities.h"
 
@@ -11,5 +24,7 @@
 void SaveDataToFlash(void);
 void RestoreDataFromFlash(void);
 BOOL SaveDataTo2KFlash(u32 *pData, u32 IntLen, int addr);
+
+
 
 #endif

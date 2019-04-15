@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    aia_bootload.c 
+  * @file    AIA_Bootload.c 
   * @author  Bowen.He
   * @version V1.1
   * @created    20-November-2015

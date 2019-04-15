@@ -1,3 +1,16 @@
+/**
+  ******************************************************************************
+  * @file    GPIO_Driver.c 
+  * @author  AIA Team
+  * @version V1.1
+  * @created    15-April-2019
+  * @lastModify 
+  * @brief   GPIO Driver:  
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
+  ******************************************************************************/
 #include "GPIO_Driver.h"
 
 
@@ -5,11 +18,11 @@
 
 
 /**
-  * @brief  ÅäÖÃLED µÄÒý½Å
+  * @brief  
   * @param  None
   * @retval None
   */
-void LED_GPIO_Config(void)
+void GPIO_Driver_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
