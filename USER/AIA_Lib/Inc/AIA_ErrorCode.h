@@ -16,6 +16,7 @@
 
 /* Exported macro ------------------------------------------------------------*/
 #define 	RESPONSE_IN_PROCESS			-1
+#define 	PREPARE_IN_PROCESS			-2
 
 #define 	PASS  						0
 #define     FAIL                		1

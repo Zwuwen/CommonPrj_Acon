@@ -26,6 +26,8 @@
 
 #define MODULE_NAME "AIA_Common_Module"
 
+#define RECEIVE_PARAMS_NUMBER_MAX 10
+
 /* Exported Function Macro ------------------------------------------------------------*/
 extern const char IdChar[];
 
@@ -59,6 +61,10 @@ typedef	struct
 	int normalRecvSignature;
 	int boardcastRecvSignature;
 	
+	int validParams;
+	int recvParams[RECEIVE_PARAMS_NUMBER_MAX];
+	
+	int responseLen;
 	char Name[20];
 	char responseBuf[100];
 	

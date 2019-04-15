@@ -12,6 +12,7 @@
   * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
   ******************************************************************************
 */ 
+#include <stdarg.h>
 #include "AIA_Protocol2.0.h"
 #include "AIA_Utilities.h" 
 #include "CAN_Driver.h"
@@ -19,11 +20,13 @@
 #include "AIA_Bootload.h"
 #include "AIA_ModuleCore.h"
 #include "AIA_ErrorCode.h"
+#include "stdio.h"
 
 /* Private function prototypes -----------------------------------------------*/
 void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg);
 int ProcessNewCmd(AIAMODULE *module);
-
+int ParseCmdParam(char *cmd, int *val, int num);
+void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...);
 
 
 /**
@@ -103,8 +106,21 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg)
 
 
 
+
+void SendModuleResponse(AIAMODULE *module)
+{
+	sendNByteDataViaCan(module->responseBuf, module->responseLen, module->address, CAN_ID_STD);
+	module->sequence = (module->sequence == '9') ? '1' : (module->sequence + 1);
+}
+
+
+
+
+
 void AIA_Protocol2_Handle(AIAMODULE *module)
 {
+	int ret;
+	
 	if(module->fifo.cmdNumber == 0)
 		return;
 	
@@ -112,7 +128,22 @@ void AIA_Protocol2_Handle(AIAMODULE *module)
 		return;
 	
 	module->recvFrame = (FRAMEFORMAT*)module->fifo.pOutBuf;
-	ProcessNewCmd(module);
+	
+	ret = ProcessNewCmd(module);
+	
+	if(ret == RESPONSE_IN_PROCESS)
+		return;
+	
+	if(ret == PREPARE_IN_PROCESS)
+	{
+		//Nothing to do;
+	}
+	else
+	{
+		PrepareResponseBuf(module, "%d", ret);
+	}
+	
+	SendModuleResponse(module);
 }
 
 
@@ -127,6 +158,64 @@ int RA_Process(AIAMODULE *module)
 	return PASS;
 }
 
+
+
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int RV_Process(AIAMODULE *module)
+{
+	if(module->validParams == 0)
+	{
+		module->recvParams[0] = 0;
+	}
+	
+	/*validParams > 0*/
+	switch(module->recvParams[0])
+	{
+		case 1:
+			PrepareResponseBuf(module, "%d,%s,%s", 0, __DATE__, __TIME__);
+			break;
+		case 0: 
+		default:
+			PrepareResponseBuf(module, "%d,%d,%d,%d", 0, FIRST_VER, MIDDLE_VER, TEMP_VER);
+			break;
+	}
+	
+	return PASS;
+}
+
+
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int SA_Process(AIAMODULE *module)
+{ 
+	return PASS;
+}
+
+
+
+
+void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	
+	module->responseBuf[1] = '&';
+	module->responseBuf[2] = module->addressChar;
+	module->responseBuf[3] = module->sequence;
+	module->responseBuf[4] = module->recvFrame->cmdHigh  - ' '; /*lower case*/
+	module->responseBuf[5] = module->recvFrame->cmdLow  - ' ';  /*lower case*/
+	
+	module->responseLen = 5;
+	module->responseLen += vsprintf(&(module->responseBuf[module->responseLen]), fmt, args);
+	va_end(args);
+}
 
 
 
@@ -153,7 +242,7 @@ int ProcessNewCmd(AIAMODULE *module)
 	}
 	
 	cmdWord = UPCASE2INT(pFrame->cmdHigh, pFrame->cmdLow);
-	
+	module->validParams = ParseCmdParam(pFrame->buf, module->recvParams, MAXIMUM_SUPPORT_RECV_PARAMS);
 	
 	if(pFrame->bcflag == 1) /*board cast cmd only support the RA*/
 	{
@@ -161,21 +250,25 @@ int ProcessNewCmd(AIAMODULE *module)
 		{
 			CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address.*/	
 			default:
-			ret = RESPONSE_IN_PROCESS;
+			ret = ERR_CMDNOTIMPLEMENT;
 			break;	
 		}
 		return ret;
 	}
 	
-	/*normal cmd*/
+	/*Reserved Cmd*/
 	switch(cmdWord)
 	{
-		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*∂¡»°∞Ê±æ∫≈*/
+		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
+		CASE_REGISTER_CMD_PROCESS(RV, 'R', 'V');	/*Read Version*/
+		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'A');	/*Set Address*/
+		
 		
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
 	}
+	
 
 	return ret;
 	
@@ -206,23 +299,7 @@ int ProcessNewCmd(AIAMODULE *module)
 
 
 
-/**
-  * @brief  Get the Param Length, the ParamString could be anythin except reserved characters.
-  *			',': separator between two params.
-  *			'\r': indicate the end of cmd frame.
-  * @param  pCmd: Param after XX cmd..
-  * @retval The ParamString Length.
-  */
-static int GetParamLength(char *pCmd)
-{
-	int i=0;
-	while((*pCmd != ' ')&&(*pCmd != '\r'))
-	{
-		pCmd++;
-		i++;		
-	}
-	return i;
-}
+
 
 
 /**
@@ -280,6 +357,24 @@ RETSTAT StrToDec(char *Str, int *Result, int length)
 
 
 /**
+  * @brief  Get the Param Length, the ParamString could be anythin except reserved characters.
+  *			',': separator between two params.
+  *			'\r': indicate the end of cmd frame.
+  * @param  pCmd: Param after XX cmd..
+  * @retval The ParamString Length.
+  */
+static int GetParamLength(char *pCmd)
+{
+	int i=0;
+	while((*pCmd != ',')&&(*pCmd != ' ')&&(*pCmd != '\r'))
+	{
+		pCmd++;
+		i++;		
+	}
+	return i;
+}
+
+/**
   * @brief  
   * @param  str:
   * @param  val:
@@ -290,7 +385,7 @@ int ParseCmdParam(char *cmd, int *val, int num)
 {
 	int len, i;
 	char *p;
-	len = GetParamLength(cmd);
+	len = 0;
 	p = cmd + len;
 	if(*p++ == '\r')
 	{

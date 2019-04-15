@@ -17,11 +17,16 @@
 #define	__AIA_PROTOCOL_H
 
 
+#define MAXIMUM_SUPPORT_RECV_PARAMS 10
+
+
 
 #define UPCASE2INT(A,B) ((A-'A')*26u + (B-'A'))
 #define CASE_REGISTER_CMD_PROCESS(AB,A,B) 		case UPCASE2INT(A,B):\
 												ret = AB##_Process(module);\
 												break
+													
+												
 													
 
 /* Exported functions ------------------------------------------------------------*/
