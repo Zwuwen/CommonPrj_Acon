@@ -81,6 +81,9 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 			if(module->fifo.flag.Bit.hasFrameHead == 1)
 			{
 				module->fifo.flag.Bit.hasFrameHead = 0;
+				if(module->fifo.currRecvLength < 7)
+					continue;
+				
 				module->fifo.pRecvBuf[module->fifo.currRecvLength] = '\r';
 				module->fifo.pRecvBuf[module->fifo.currRecvLength+1] = '\0';
 				module->fifo.pRecvBuf[0] = module->fifo.currRecvLength - 2;
@@ -97,6 +100,9 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 		}
 		else
 		{
+			if(module->fifo.flag.Bit.hasFrameHead == 0)
+				continue;
+			
 			if(module->fifo.currRecvLength < COMMANDLENGTH)
 				module->fifo.pRecvBuf[module->fifo.currRecvLength++] = rxMsg->Data[i];
 			else 
