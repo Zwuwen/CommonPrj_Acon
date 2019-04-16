@@ -26,7 +26,7 @@
 void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag);
 int ProcessNewCmd(AIAMODULE *module);
 int ParseCmdParam(char *cmd, int *val, int num);
-void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...);
+
 
 
 /**
@@ -153,57 +153,6 @@ void AIA_Protocol2_Handle(AIAMODULE *module)
 
 
 
-/**
-  * @brief  
-  * @param  
-  * @retval res
-  */
-int RA_Process(AIAMODULE *module)
-{ 
-	return PASS;
-}
-
-
-
-/**
-  * @brief  
-  * @param  
-  * @retval res
-  */
-int RV_Process(AIAMODULE *module)
-{
-	if(module->validParams == 0)
-	{
-		module->recvParams[0] = 0;
-	}
-	
-	/*validParams > 0*/
-	switch(module->recvParams[0])
-	{
-		case 1:
-			PrepareResponseBuf(module, "%d,%s,%s", 0, __DATE__, __TIME__);
-			break;
-		case 0: 
-		default:
-			PrepareResponseBuf(module, "%d,%d,%d,%d", 0, FIRST_VER, MIDDLE_VER, TEMP_VER);
-			break;
-	}
-	
-	return PASS;
-}
-
-
-/**
-  * @brief  
-  * @param  
-  * @retval res
-  */
-int SA_Process(AIAMODULE *module)
-{ 
-	return PASS;
-}
-
-
 
 
 void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...)
@@ -217,8 +166,11 @@ void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...)
 	module->responseBuf[4] = module->recvFrame->cmdHigh  + ' '; /*lower case*/
 	module->responseBuf[5] = module->recvFrame->cmdLow  + ' ';  /*lower case*/
 	
-	module->responseBuf[0] = 5;
-	module->responseBuf[0] += vsprintf(&(module->responseBuf[module->responseBuf[0]+1]), fmt, args);
+	module->responseBuf[0] = 6;
+	module->responseBuf[0] += vsprintf(&(module->responseBuf[module->responseBuf[0]]), fmt, args);
+	module->responseBuf[module->responseBuf[0]] = '\r';
+	module->responseBuf[module->responseBuf[0]+1] = '\0';
+	
 	va_end(args);
 }
 
@@ -251,29 +203,18 @@ int ProcessNewCmd(AIAMODULE *module)
 	
 	if(pFrame->bcflag == 1) /*board cast cmd only support the RA*/
 	{
-		switch(cmdWord)
-		{
-			CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address.*/	
-			default:
+		if(module->BoardCastProcess == NULL)
 			ret = ERR_CMDNOTIMPLEMENT;
-			break;	
-		}
+		else
+			ret = module->BoardCastProcess(module, cmdWord);
+		
 		return ret;
 	}
 	
-	/*Reserved Cmd*/
-	switch(cmdWord)
-	{
-		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
-		CASE_REGISTER_CMD_PROCESS(RV, 'R', 'V');	/*Read Version*/
-		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'A');	/*Set Address*/
-		
-		
-		default:
-			ret = ERR_CMDNOTIMPLEMENT;
-		break;		
-	}
-	
+	if(module->NormalProcess == NULL)
+		ret = ERR_CMDNOTIMPLEMENT;
+	else
+		ret = module->NormalProcess(module, cmdWord);
 
 	return ret;
 	
@@ -281,26 +222,6 @@ int ProcessNewCmd(AIAMODULE *module)
 }
 
   
- 
-//void ResponseCmdByCan(int ret)
-//{
-//	char AnswerStr[20];
-//	if(ret != RESPONSE_IN_PROCESS)
-//	{
-//		if(ret == PASS )
-//		{
-//			sprintf(AnswerStr,"&%cOK\r", ModuleAdressChar);
-//			CANSendString(AnswerStr, ModuleAdress);		
-//		}
-//		else
-//		{
-//			sprintf(AnswerStr,"&%cERR %d\r", ModuleAdressChar, ret);
-//			CANSendString(AnswerStr, ModuleAdress);	
-//		}
-//	}	
-//}
-
-
 
 
 
@@ -392,7 +313,7 @@ int ParseCmdParam(char *cmd, int *val, int num)
 	char *p;
 	len = 0;
 	p = cmd + len;
-	if(*p++ == '\r')
+	if(*p == '\r')
 	{
 		return 0;
 	}

@@ -50,7 +50,9 @@ typedef struct _FRAMEFORMAT
 }FRAMEFORMAT;
 
 
-typedef	struct
+
+
+typedef	struct _AIAMODULE
 {
 	int address;	/**/
 	char addressChar;
@@ -69,6 +71,9 @@ typedef	struct
 	
 	FRAMEFORMAT *recvFrame;
 	
+	int (*BoardCastProcess)(struct _AIAMODULE *module, int cmdword);
+	int (*NormalProcess)(struct _AIAMODULE *module, int cmdword);
+	
 	CMDFIFO fifo;
 	
 	/*Flags*/
@@ -80,7 +85,6 @@ typedef	struct
 		int Allbits;
 	}flag;
 }AIAMODULE;
-
 extern AIAMODULE ModuleCore;
 
 

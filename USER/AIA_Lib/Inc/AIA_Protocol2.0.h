@@ -19,7 +19,7 @@
 #include "AIA_ModuleCore.h" 
 
 #define MAXIMUM_SUPPORT_RECV_PARAMS 10
-
+#define EXECUTE_SUCCESS 0
 
 
 #define UPCASE2INT(A,B) ((A-'A')*26u + (B-'A'))
@@ -32,7 +32,7 @@
 
 /* Exported functions ------------------------------------------------------------*/
 void AIA_Protocol2_Handle(AIAMODULE *module);
-int ParseCmdParam(char *cmd, int *val, int num);
-void ResponseCmdByCan(int ret);
+void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...);
+												
 
 #endif

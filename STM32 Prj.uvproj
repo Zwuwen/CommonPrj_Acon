@@ -425,6 +425,11 @@
               <FileType>1</FileType>
               <FilePath>.\USER\Task\main.c</FilePath>
             </File>
+            <File>
+              <FileName>DemoTask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\DemoTask.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -499,6 +504,11 @@
               <FileName>AIA_ModuleCore.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\USER\AIA_Lib\AIA_ModuleCore.c</FilePath>
+            </File>
+            <File>
+              <FileName>AIA_Persistence.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\AIA_Lib\AIA_Persistence.c</FilePath>
             </File>
             <File>
               <FileName>AIA_CmdFIFO.c</FileName>

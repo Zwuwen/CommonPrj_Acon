@@ -326,7 +326,7 @@ int PID_Command_Func(char *CmdStr, char *Cmd)
 		/*LEN &1STOP_PID*/
 		int val[1];
 		ret = ERR_PARAM;
-		if((ParseCmdParam(Cmd + firstalign, val, 1) == 1) && X_InRange(val[0], 0, 3))
+//		if((ParseCmdParam(Cmd + firstalign, val, 1) == 1) && X_InRange(val[0], 0, 3))
 		{
 			LVPID[val[0]].flag.Bit.enablePIDTask = 0;
 			LVPID[val[0]].implementMV(0);
@@ -339,7 +339,7 @@ int PID_Command_Func(char *CmdStr, char *Cmd)
 		/*LEN &1START_PID*/
 		int val[1];
 		ret = ERR_PARAM;
-		if((ParseCmdParam(Cmd + firstalign, val, 1) == 1) && X_InRange(val[0], 0, 3))
+//		if((ParseCmdParam(Cmd + firstalign, val, 1) == 1) && X_InRange(val[0], 0, 3))
 		{
 			LVPID_Init_or_Reset(&LVPID[val[0]]);
 			LVPID[val[0]].flag.Bit.enablePIDTask = 1;
@@ -352,7 +352,7 @@ int PID_Command_Func(char *CmdStr, char *Cmd)
 	{
 		int val[5];
 		ret = ERR_PARAM;
-		if((ParseCmdParam(Cmd + firstalign, val, 5) == 5) && X_InRange(val[0], 0, 3))
+//		if((ParseCmdParam(Cmd + firstalign, val, 5) == 5) && X_InRange(val[0], 0, 3))
 		{
 			LVPID_SetGainAndDt(&LVPID[val[0]], val[1], val[2], val[3], val[4]);
 			ret = PASS;	
