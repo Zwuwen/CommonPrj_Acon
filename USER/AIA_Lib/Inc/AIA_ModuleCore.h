@@ -58,14 +58,14 @@ typedef	struct _AIAMODULE
 	char addressChar;
 	char boardcastIdChar;
 	char sequence; /* '1'~ '9' : '0' means needn't to match seq.*/
-	char dummys[2];
+	char dummys[1];
 	
 	int normalRecvSignature;
 	int boardcastRecvSignature;
 	
 	int validParams;
 	int recvParams[RECEIVE_PARAMS_NUMBER_MAX];
-	
+
 	char Name[20];
 	char responseBuf[100];
 	
@@ -73,6 +73,7 @@ typedef	struct _AIAMODULE
 	
 	int (*BoardCastProcess)(struct _AIAMODULE *module, int cmdword);
 	int (*NormalProcess)(struct _AIAMODULE *module, int cmdword);
+	int (*UserDefineProcess)(struct _AIAMODULE *module, int cmdword);
 	
 	CMDFIFO fifo;
 	
@@ -92,7 +93,7 @@ extern AIAMODULE ModuleCore;
 extern uint8_t	const HEX_2_ASCII[];
 
 /* Exported functions ------------------------------------------------------- */
-void ModuleCore_Init(void);
+void ModuleCore_Init(void* userDefineFunc);
 
 
 

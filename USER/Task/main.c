@@ -28,6 +28,8 @@
 #include "AIA_ModuleCore.h"
 #include "AIA_Protocol2.0.h"
 
+#include "DemoTask.h"
+
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -64,11 +66,10 @@ int main(void)
 	
 	
 	//////Module Initialize///////////	
-	ModuleCore_Init();
+	ModuleCore_Init(DemoTask_CmdProcess);
 	
 	//////Can Filter///////////	
-	//TODO:
-	CAN_Filter_Config(&ModuleCore.normalRecvSignature, 2);
+	CAN_Filter_Config(CanFilterSignature, FILTER_FRAMEID_NUMBER);
 	
 
 	if (SysTick_Config(SystemCoreClock/1000)) /* 1ms */

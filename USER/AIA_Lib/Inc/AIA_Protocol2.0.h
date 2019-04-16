@@ -27,12 +27,23 @@
 												ret = AB##_Process(module);\
 												break
 													
-												
-													
+#define CHECK_PARAM_NUMBER(TOTAL)			if(module->validParams != TOTAL) return ERR_PARAM
+#define CHECK_RANGE_PARAM(INDEX, PMIN, PMAX)  	if((module->validParams < INDEX) 		|| 	\
+												   (module->recvParams[INDEX-1] < PMIN) ||	\
+												   (module->recvParams[INDEX-1] > PMAX)) return ERR_PARAM
+
+#define CHECK_RANGE_PARAM_1(PMIN, PMAX) CHECK_RANGE_PARAM(1, PMIN, PMAX)
+#define CHECK_RANGE_PARAM_2(PMIN, PMAX) CHECK_RANGE_PARAM(1, PMIN, PMAX)
+#define CHECK_RANGE_PARAM_3(PMIN, PMAX) CHECK_RANGE_PARAM(1, PMIN, PMAX)
+#define CHECK_RANGE_PARAM_4(PMIN, PMAX) CHECK_RANGE_PARAM(1, PMIN, PMAX)
+#define CHECK_RANGE_PARAM_5(PMIN, PMAX) CHECK_RANGE_PARAM(1, PMIN, PMAX)
+#define CHECK_RANGE_PARAM_6(PMIN, PMAX) CHECK_RANGE_PARAM(1, PMIN, PMAX)
+											
+//	if(module->recvParams[0])													
 
 /* Exported functions ------------------------------------------------------------*/
 void AIA_Protocol2_Handle(AIAMODULE *module);
 void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...);
-												
+void SendModuleResponse(AIAMODULE *module);												
 
 #endif

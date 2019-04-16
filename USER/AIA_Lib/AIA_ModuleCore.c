@@ -14,6 +14,7 @@
 #include "AIA_ModuleCore.h"
 #include "AIA_Protocol2.0.h"
 #include "AIA_ErrorCode.h"
+#include "CAN_Driver.h"
 #include "string.h"
 
 AIAMODULE ModuleCore;
@@ -32,21 +33,43 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword);
   * @param  moduleId: CoreModule Device id.
   * @retval None
   */
-void ModuleCore_Init(void)
+void ModuleCore_Init(void* userDefineFunc)
 {
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
 	ModuleCore.address = 0x01;
 	ModuleCore.addressChar = IdChar[ModuleCore.address];
+	ModuleCore.normalRecvSignature = ModuleCore.address | 0x80;
 	ModuleCore.boardcastIdChar = '0';
 	ModuleCore.boardcastRecvSignature = 0x80;
-	ModuleCore.normalRecvSignature = ModuleCore.address | 0x80;
+	
 	ModuleCore.sequence = '1';
 	
 	ModuleCore.BoardCastProcess = ModuleCore_BroadcastCmdProcess;
 	ModuleCore.NormalProcess = ModuleCore_NormalCmdProcess;
 	
+	CanFilterSignature[0] = ModuleCore.normalRecvSignature;	
+	CanFilterSignature[1] = ModuleCore.boardcastRecvSignature;
+	
 	InitCmdFIFO(&ModuleCore.fifo);
+}
+
+
+void ModuleCore_ModifyAddress(int address)
+{
+	ModuleCore.address = address;
+	ModuleCore.addressChar = IdChar[ModuleCore.address];	
+	ModuleCore.normalRecvSignature = ModuleCore.address | 0x80;
+	
+	__disable_irq();
+	CAN_Driver_Init();
+	
+	CanFilterSignature[0] = ModuleCore.normalRecvSignature;	
+	CanFilterSignature[1] = ModuleCore.boardcastRecvSignature;
+	CAN_Filter_Config(CanFilterSignature, FILTER_FRAMEID_NUMBER);
+	
+	__enable_irq();
+	
 }
 
 
@@ -95,17 +118,23 @@ int RV_Process(AIAMODULE *module)
 }
 
 
+
+
 /**
   * @brief  
   * @param  
   * @retval res
   */
 int SA_Process(AIAMODULE *module)
-{ 
+{
+	CHECK_RANGE_PARAM_1(1, 62);
 	
+	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+	SendModuleResponse(module);
+
+	ModuleCore_ModifyAddress(module->recvParams[0]);
 	
-	
-	return PASS;
+	return RESPONSE_IN_PROCESS;
 }
 
 
@@ -131,17 +160,28 @@ int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword)
 int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 {
 	int ret;
+	
 	/*Reserved Cmd*/
 	switch(cmdword)
 	{
 		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
 		CASE_REGISTER_CMD_PROCESS(RV, 'R', 'V');	/*Read Version*/
 		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'A');	/*Set Address*/
+		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'P');	/*Save Params*/
 		
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
 	}
+	
+	if(ret == ERR_CMDNOTIMPLEMENT)
+	{
+		if(module->UserDefineProcess != NULL)
+		{
+			ret = module->UserDefineProcess(module, cmdword);
+		}	
+	}
+	
 	return ret;
 }
 

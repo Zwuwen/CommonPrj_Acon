@@ -428,7 +428,7 @@
             <File>
               <FileName>DemoTask.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\DemoTask.c</FilePath>
+              <FilePath>.\USER\Task\DemoTask.c</FilePath>
             </File>
           </Files>
         </Group>

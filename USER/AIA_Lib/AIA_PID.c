@@ -382,7 +382,7 @@ int PID_Command_Func(char *CmdStr, char *Cmd)
 	{
 		int val[2];
 		ret = ERR_PARAM;
-		if((ParseCmdParam(Cmd+1, val, 2) == 2) && X_InRange(val[0], 0, 3))
+//		if((ParseCmdParam(Cmd+1, val, 2) == 2) && X_InRange(val[0], 0, 3))
 		{
 			LVPID[val[0]].implementMV(val[1]);
 			ret = PASS;

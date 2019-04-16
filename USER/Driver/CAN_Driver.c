@@ -14,6 +14,10 @@
 #include "CAN_Driver.h"
 #include "string.h"
 
+
+int CanFilterSignature[FILTER_FRAMEID_NUMBER];
+
+
 /**
   * @brief  Configure the CAN peripheral.
   * @param  moduleId: CoreModule Device id.

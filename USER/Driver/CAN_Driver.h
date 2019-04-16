@@ -15,6 +15,8 @@
 #define	__CAN_DRIVER_H
 #include "stm32f10x.h"
 
+#define FILTER_FRAMEID_NUMBER 2
+
 
 #define GPIO_CAN                   GPIOA
 #define RCC_APB2Periph_GPIO_CAN    RCC_APB2Periph_GPIOA
@@ -24,7 +26,7 @@
 
 
 /* Exported variables ------------------------------------------------------- */
-
+extern int CanFilterSignature[FILTER_FRAMEID_NUMBER];
 
 
 /* Exported functions ------------------------------------------------------- */
