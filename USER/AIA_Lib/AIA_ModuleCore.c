@@ -17,11 +17,17 @@
 #include "CAN_Driver.h"
 #include "string.h"
 
+
+
 AIAMODULE ModuleCore;
 
 const char IdChar[] = { '0','1','2','3','4','5','6','7','8','9',
 						'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
 						'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+	
+/*-------Used here--------*/	
+int SYNC_CmdProcess(AIAMODULE *module, int cmdword);
+	
 
 int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword);
 int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword);	
@@ -139,7 +145,11 @@ int SA_Process(AIAMODULE *module)
 
 
 
-
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
 int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword)
 {
 	int ret;
@@ -156,7 +166,11 @@ int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword)
 
 
 
-
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
 int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 {
 	int ret;
@@ -168,14 +182,21 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 		CASE_REGISTER_CMD_PROCESS(RV, 'R', 'V');	/*Read Version*/
 		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'A');	/*Set Address*/
 		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'P');	/*Save Params*/
-		
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
 	}
-	
+
 	if(ret == ERR_CMDNOTIMPLEMENT)
 	{
+#if ENABLE_AIA_SYNC == 1
+		ret = SYNC_CmdProcess(module, cmdword);
+		if(ret != ERR_CMDNOTIMPLEMENT)
+			return ret;		
+#endif		
+		
+		
+		
 		if(module->UserDefineProcess != NULL)
 		{
 			ret = module->UserDefineProcess(module, cmdword);

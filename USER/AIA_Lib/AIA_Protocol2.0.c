@@ -61,7 +61,11 @@ void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg)
 
 
 
-
+/**
+  * @brief  
+  * @param  
+  * @retval None
+  */
 void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 {
 	int i;
@@ -113,7 +117,11 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 
 
 
-
+/**
+  * @brief  
+  * @param  
+  * @retval None
+  */
 void SendModuleResponse(AIAMODULE *module)
 {
 	sendNByteDataViaCan(&module->responseBuf[1], module->responseBuf[0], module->address, CAN_ID_STD);
@@ -127,7 +135,11 @@ void SendModuleResponse(AIAMODULE *module)
 
 
 
-
+/**
+  * @brief  
+  * @param  
+  * @retval None
+  */
 void AIA_Protocol2_Handle(AIAMODULE *module)
 {
 	int ret;
@@ -160,7 +172,11 @@ void AIA_Protocol2_Handle(AIAMODULE *module)
 
 
 
-
+/**
+  * @brief  
+  * @param  
+  * @retval None
+  */
 void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...)
 {
 	va_list args;
@@ -182,7 +198,11 @@ void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...)
 
 
 
-
+/**
+  * @brief  
+  * @param  
+  * @retval None
+  */
 int ProcessNewCmd(AIAMODULE *module)
 {
 	int ret;

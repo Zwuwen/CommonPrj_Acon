@@ -26,6 +26,9 @@
 #include "AIA_SyncData.h"
 #include "CAN_Driver.h"
 #include "AIA_ErrorCode.h"
+#include "AIA_ModuleCore.h"
+#include "AIA_Protocol2.0.h"
+
 #include "stdio.h"
 #include "string.h"
 
@@ -145,8 +148,61 @@ void SyncData_UpdatePeriod_InIrq(void)
 
 
 
-int ParseCmdParam(char *cmd, int *val, int num);
-void ResponseCmdByCan(int ret);
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int HA_Process(AIAMODULE *module)
+{
+//	CHECK_RANGE_PARAM_1(1, 62);
+//	
+//	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+//	SendModuleResponse(module);
+
+//	ModuleCore_ModifyAddress(module->recvParams[0]);
+	
+	return RESPONSE_IN_PROCESS;
+}
+
+
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int HB_Process(AIAMODULE *module)
+{
+//	CHECK_RANGE_PARAM_1(1, 62);
+//	
+//	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+//	SendModuleResponse(module);
+
+//	ModuleCore_ModifyAddress(module->recvParams[0]);
+	
+	return RESPONSE_IN_PROCESS;
+}
+
+
+
+int SYNC_CmdProcess(AIAMODULE *module, int cmdword)
+{
+	int ret;
+	
+	switch(cmdword)
+	{
+		CASE_REGISTER_CMD_PROCESS(HA, 'H', 'A');	/**/
+		CASE_REGISTER_CMD_PROCESS(HB, 'H', 'B');	/**/
+		
+		default:
+			ret = ERR_CMDNOTIMPLEMENT;
+		break;		
+	}
+	
+	return ret;
+}
+	
+
 /**
   * @brief  
   * @param  *CmdStr: Command Word
@@ -169,11 +225,11 @@ int SYNC_Command_Func(char *CmdStr, char *Cmd)
 		/*LEN &1SYNCA*/
 		int val[1];
 		ret = ERR_PARAM;
-		if(ParseCmdParam(Cmd + firstalign, val, 1) == 1)
+//		if(ParseCmdParam(Cmd + firstalign, val, 1) == 1)
 		{
 			SyncData.uploadPeriod = val[0];				
 		}
-		else
+//		else
 		{
 			SyncData.uploadPeriod = DEFAULT_SYNCDATA_UPLOAD_PERIOD;
 		}
