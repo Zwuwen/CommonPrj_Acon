@@ -16,6 +16,7 @@
 #ifndef __AIA_PROTOCOL_H
 #define	__AIA_PROTOCOL_H
 
+#include "AIA_ModuleCore.h" 
 
 #define MAXIMUM_SUPPORT_RECV_PARAMS 10
 
@@ -30,6 +31,7 @@
 													
 
 /* Exported functions ------------------------------------------------------------*/
+void AIA_Protocol2_Handle(AIAMODULE *module);
 int ParseCmdParam(char *cmd, int *val, int num);
 void ResponseCmdByCan(int ret);
 

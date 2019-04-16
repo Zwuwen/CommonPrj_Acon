@@ -11,7 +11,6 @@
   * <h2><center>&copy; COPYRIGHT 2019 ACONBIO</center></h2>
   ******************************************************************************
   */ 
-  
 #include "AIA_ModuleCore.h" 
 #include "AIA_ErrorCode.h"
 #include "string.h"
@@ -33,6 +32,14 @@ void ModuleCore_Init(void)
 {
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
+	ModuleCore.address = 0x01;
+	ModuleCore.addressChar = IdChar[ModuleCore.address];
+	ModuleCore.boardcastIdChar = '0';
+	ModuleCore.boardcastRecvSignature = 0x80;
+	ModuleCore.normalRecvSignature = ModuleCore.address | 0x80;
+	ModuleCore.sequence = '1';
+	
+	InitCmdFIFO(&ModuleCore.fifo);
 }
 
 
@@ -41,15 +48,7 @@ void ModuleCore_Init(void)
 
 int ModuleCore_HandleCmd(AIAMODULE *module)
 {
-
-	
-	
-	
-	
-
-	
-	
-
+	return 0;
 }
 
 

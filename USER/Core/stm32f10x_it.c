@@ -215,13 +215,14 @@ void TIM3_IRQHandler(void)
 * Return         : None
 *******************************************************************************/
 void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg);
+
 void USB_LP_CAN1_RX0_IRQHandler(void)
 {
-	CanRxMsg rxMessage;
+	CanRxMsg rxmsg;
 	
-	CAN_Receive(CAN1, CAN_FIFO0, &rxMessage);
+	CAN_Receive(CAN1, CAN_FIFO0, &rxmsg);
 	
-	DistributeNewCanFrame_InIrq(&rxMessage);
+	DistributeNewCanFrame_InIrq(&rxmsg);
 	
 }
 

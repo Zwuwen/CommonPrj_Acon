@@ -64,7 +64,6 @@ typedef	struct
 	int validParams;
 	int recvParams[RECEIVE_PARAMS_NUMBER_MAX];
 	
-	int responseLen;
 	char Name[20];
 	char responseBuf[100];
 	

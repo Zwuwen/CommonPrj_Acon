@@ -31,6 +31,7 @@
 void CAN_Driver_Init(void);
 void sendNByteDataViaCan(char *pData, int len, uint32_t frameID, uint32_t IdType);
 void sendStringViaCan(char *pStr, uint32_t frameID, uint32_t IdType);
+void CAN_Filter_Config(int *frameSignature, int len);
 
 #define CANSendStringExt(pSTRING, FRAMEID) sendStringViaCan(pSTRING, FRAMEID, CAN_ID_EXT)
 #define CANSendStringStd(pSTRING, FRAMEID) sendStringViaCan(pSTRING, FRAMEID, CAN_ID_STD)

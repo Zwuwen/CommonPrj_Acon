@@ -23,7 +23,7 @@
 #include "stdio.h"
 
 /* Private function prototypes -----------------------------------------------*/
-void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg);
+void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag);
 int ProcessNewCmd(AIAMODULE *module);
 int ParseCmdParam(char *cmd, int *val, int num);
 void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...);
@@ -45,13 +45,13 @@ void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg)
 	
 	if(rxMsg->StdId == ModuleCore.normalRecvSignature)
 	{
-		ReceiveCanFrame_InIrq(&ModuleCore, rxMsg);
+		ReceiveCanFrame_InIrq(&ModuleCore, rxMsg, 0);
 		return;
 	}
 	
 	if(rxMsg->StdId == ModuleCore.boardcastRecvSignature)
 	{
-		
+		ReceiveCanFrame_InIrq(&ModuleCore, rxMsg, 1);
 		/*boardcast frame don't need return.*/
 	}
 	
@@ -62,7 +62,7 @@ void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg)
 
 
 
-void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg)
+void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 {
 	int i;
 	
@@ -71,8 +71,9 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg)
 		if(rxMsg->Data[i] == '&')
 		{
 			module->fifo.flag.Bit.hasFrameHead = 1;
-			module->fifo.pRecvBuf[1] = '&';	    /*avoid copy frame*/
-			module->fifo.currRecvLength = 2;	/*Cmd[0] is length*/
+			module->fifo.pRecvBuf[1] = bcflag;	 
+			module->fifo.pRecvBuf[2] = '&';	   /*[0] is length; [1] broadcast flag*/
+			module->fifo.currRecvLength = 3;	
 			module->fifo.flag.Bit.receiveCompleted = 0;	
 		}
 		else if(rxMsg->Data[i] == '\r')
@@ -82,9 +83,9 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg)
 				module->fifo.flag.Bit.hasFrameHead = 0;
 				module->fifo.pRecvBuf[module->fifo.currRecvLength] = '\r';
 				module->fifo.pRecvBuf[module->fifo.currRecvLength+1] = '\0';
-				module->fifo.pRecvBuf[0] = module->fifo.currRecvLength - 1;
+				module->fifo.pRecvBuf[0] = module->fifo.currRecvLength - 2;
 				
-				if((module->fifo.pRecvBuf[3] == 'Z') && (module->fifo.pRecvBuf[4] == 'Z'))
+				if((module->fifo.pRecvBuf[5] == 'Z') && (module->fifo.pRecvBuf[6] == 'Z'))
 				{
 					ClearCmdFIFO(&(module->fifo));
 					module->flag.Bit.terminate = 1;
@@ -109,7 +110,11 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg)
 
 void SendModuleResponse(AIAMODULE *module)
 {
-	sendNByteDataViaCan(module->responseBuf, module->responseLen, module->address, CAN_ID_STD);
+	sendNByteDataViaCan(&module->responseBuf[1], module->responseBuf[0], module->address, CAN_ID_STD);
+	
+	if(module->recvFrame->sequence == '0')
+		return;
+	
 	module->sequence = (module->sequence == '9') ? '1' : (module->sequence + 1);
 }
 
@@ -208,12 +213,12 @@ void PrepareResponseBuf(AIAMODULE *module, const char *fmt, ...)
 	
 	module->responseBuf[1] = '&';
 	module->responseBuf[2] = module->addressChar;
-	module->responseBuf[3] = module->sequence;
-	module->responseBuf[4] = module->recvFrame->cmdHigh  - ' '; /*lower case*/
-	module->responseBuf[5] = module->recvFrame->cmdLow  - ' ';  /*lower case*/
+	module->responseBuf[3] = module->recvFrame->sequence;
+	module->responseBuf[4] = module->recvFrame->cmdHigh  + ' '; /*lower case*/
+	module->responseBuf[5] = module->recvFrame->cmdLow  + ' ';  /*lower case*/
 	
-	module->responseLen = 5;
-	module->responseLen += vsprintf(&(module->responseBuf[module->responseLen]), fmt, args);
+	module->responseBuf[0] = 5;
+	module->responseBuf[0] += vsprintf(&(module->responseBuf[module->responseBuf[0]+1]), fmt, args);
 	va_end(args);
 }
 

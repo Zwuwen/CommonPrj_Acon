@@ -79,10 +79,10 @@ void CAN_Filter_Config(int *frameSignature, int len)
     //2、如果是奇数个id。 最后一个如何处理。
     	
 	
-// 	CAN_FilterInitStructure.CAN_FilterIdHigh   		= 	(((u32)(moduleId|0X80)<<21)&0xffff0000)>>16;		/*module ID*/
-//	CAN_FilterInitStructure.CAN_FilterIdLow   		= 	(((u32)(moduleId|0X80)<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xffff;
-//	CAN_FilterInitStructure.CAN_FilterMaskIdHigh  	= 	(((u32)(0|0X80)<<21)&0xffff0000)>>16;				/*Boardcast ID*/
-//	CAN_FilterInitStructure.CAN_FilterMaskIdLow   	= 	(((u32)(0|0X80)<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xffff;
+ 	CAN_FilterInitStructure.CAN_FilterIdHigh   		= 	(((u32)(*frameSignature|0X80)<<21)&0xffff0000)>>16;		/*module ID*/
+	CAN_FilterInitStructure.CAN_FilterIdLow   		= 	(((u32)(*frameSignature|0X80)<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xffff;
+	CAN_FilterInitStructure.CAN_FilterMaskIdHigh  	= 	(((u32)(0|0X80)<<21)&0xffff0000)>>16;				/*Boardcast ID*/
+	CAN_FilterInitStructure.CAN_FilterMaskIdLow   	= 	(((u32)(0|0X80)<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xffff;
 	
     CAN_FilterInitStructure.CAN_FilterFIFOAssignment = 	0;
     CAN_FilterInitStructure.CAN_FilterActivation = 		ENABLE;	 

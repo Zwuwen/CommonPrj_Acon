@@ -26,7 +26,7 @@
 #include "CAN_Driver.h"
 #include "IIC_Driver.h"
 #include "AIA_ModuleCore.h"
-
+#include "AIA_Protocol2.0.h"
 
 
 /** @addtogroup STM32F10x_StdPeriph_Template
@@ -56,7 +56,8 @@ int main(void)
        system_stm32f10x.c file
      */ 
  	/* System clocks configuration ---------------------------------------------*/
-
+	NVIC_Config();
+	
 	//////Driver Initialize///////////
 	IIC_Driver_Init();
 	CAN_Driver_Init();
@@ -67,10 +68,8 @@ int main(void)
 	
 	//////Can Filter///////////	
 	//TODO:
+	CAN_Filter_Config(&ModuleCore.normalRecvSignature, 2);
 	
-	
-
-
 
 	if (SysTick_Config(SystemCoreClock/1000)) /* 1ms */
 	{ 
@@ -87,11 +86,7 @@ int main(void)
   /* Infinite loop */
 	while (1)
 	{
-		
-		
-		
-
-
+		AIA_Protocol2_Handle(&ModuleCore);
 	}
 }
 
