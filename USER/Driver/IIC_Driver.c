@@ -18,6 +18,7 @@
   ******************************************************************************/
   
 #include "IIC_Driver.h"
+#include "AIA_Utilities.h"
 
 
 void IIC_Driver_Init(void)
@@ -46,7 +47,7 @@ void IIC_Driver_Init(void)
 
 
 #define WHILE_WITH_TIMEOUT(X) while((X) && (--i > 0)); if(i == 0) return FALSE; else i = I2CWAITCOUNT
-BOOL I2C_EE_ByteWrite(u8* pBuffer, u8 WriteAddr)
+BOOL I2C_EE_ByteWrite(u8* pBuffer, u16 WriteAddr)
 {
 	int i;
 	
@@ -59,9 +60,16 @@ BOOL I2C_EE_ByteWrite(u8* pBuffer, u8 WriteAddr)
 	
     I2C_Send7bitAddress(I2C_CHANNEL, EEPROM_ADDRESS, I2C_Direction_Transmitter);
     WHILE_WITH_TIMEOUT(!I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+	
+#ifndef EEPROM_MODEL
+#error "EEPROM_MODEL Not Defined!"
+#elif (EEPROM_MODEL == AT24C256)
 
+	I2C_SendData(I2C_CHANNEL, (WriteAddr>>8)&0xff);
+	WHILE_WITH_TIMEOUT(! I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+#endif
 
-    I2C_SendData(I2C_CHANNEL, WriteAddr);
+    I2C_SendData(I2C_CHANNEL, WriteAddr&0xff);
     WHILE_WITH_TIMEOUT(!I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 
     I2C_SendData(I2C_CHANNEL, *pBuffer);
@@ -94,7 +102,7 @@ BOOL I2C_EE_WaitEepromStandbyState(void)
 }
 
 
-BOOL I2C_EE_BufferRead(u8* pBuffer, u8 ReadAddr, u16 NumByteToRead)
+BOOL I2C_EE_BufferRead(u8* pBuffer, u16 ReadAddr, u16 NumByteToRead)
 {
 	int i;
 	int num;
@@ -114,7 +122,15 @@ BOOL I2C_EE_BufferRead(u8* pBuffer, u8 ReadAddr, u16 NumByteToRead)
     I2C_Send7bitAddress(I2C_CHANNEL, EEPROM_ADDRESS, I2C_Direction_Transmitter);
     WHILE_WITH_TIMEOUT(!I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
 
-    I2C_SendData(I2C_CHANNEL, ReadAddr);
+#ifndef EEPROM_MODEL
+#error "EEPROM_MODEL Not Defined!"
+#elif (EEPROM_MODEL == AT24C256)
+
+	I2C_SendData(I2C_CHANNEL, (ReadAddr>>8)&0xff);
+	WHILE_WITH_TIMEOUT(! I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+#endif
+	
+    I2C_SendData(I2C_CHANNEL, ReadAddr&0xff);
     WHILE_WITH_TIMEOUT(!I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 
     I2C_GenerateSTART(I2C_CHANNEL, ENABLE);
@@ -146,10 +162,7 @@ BOOL I2C_EE_BufferRead(u8* pBuffer, u8 ReadAddr, u16 NumByteToRead)
 	return TRUE;
 }
 
-
-
-
-BOOL I2C_EE_PageWrite(u8* pBuffer, u8 WriteAddr, u8 NumByteToWrite)
+BOOL I2C_EE_PageWrite(u8* pBuffer, u16 WriteAddr, u8 NumByteToWrite)
 {
 	int i;
 	i = I2CWAITCOUNT;
@@ -161,8 +174,16 @@ BOOL I2C_EE_PageWrite(u8* pBuffer, u8 WriteAddr, u8 NumByteToWrite)
 	
     I2C_Send7bitAddress(I2C_CHANNEL, EEPROM_ADDRESS, I2C_Direction_Transmitter);
     WHILE_WITH_TIMEOUT(!I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+	
+#ifndef EEPROM_MODEL
+#error "EEPROM_MODEL Not Defined!"
+#elif (EEPROM_MODEL == AT24C256)
 
-    I2C_SendData(I2C_CHANNEL, WriteAddr);
+	I2C_SendData(I2C_CHANNEL, (WriteAddr>>8)&0xff);
+	WHILE_WITH_TIMEOUT(! I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+#endif
+	
+    I2C_SendData(I2C_CHANNEL, WriteAddr & 0xff);
     WHILE_WITH_TIMEOUT(! I2C_CheckEvent(I2C_CHANNEL, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 
     while (NumByteToWrite--)
@@ -176,11 +197,7 @@ BOOL I2C_EE_PageWrite(u8* pBuffer, u8 WriteAddr, u8 NumByteToWrite)
 }
 
 
-
-
-
-
-BOOL I2C_EE_BufferWrite(u8* pBuffer, u8 WriteAddr, u16 NumByteToWrite)
+BOOL I2C_EE_BufferWrite(u8* pBuffer, u16 WriteAddr, u16 NumByteToWrite)
 {
 	int NumOfPage, NumOfSingle, Addr, count;
 	
@@ -250,11 +267,29 @@ BOOL I2C_EE_BufferWrite(u8* pBuffer, u8 WriteAddr, u16 NumByteToWrite)
 	return TRUE;
 }
 
+BOOL SaveDataToI2cEprom(u8 *pData,u32 DirAddress,u32 Length)
+{
+	u32 key = 0x00000000; 
+	
+	if(I2C_EE_BufferWrite((u8*)&key, 0x00, sizeof(u32)) == FALSE) return FALSE;
+	if(I2C_EE_BufferWrite(pData,DirAddress,Length) == FALSE) return FALSE;
+	
+	key = I2C_KEY;
+	return I2C_EE_BufferWrite((u8*)&key, 0x00, sizeof(u32));	
+}
 
 
+BOOL RestoreDataFromI2cEprom(u8 *pData,u32 SrcAddress,u32 Length)
+{
+	u32 key = 0;
+	
+	if(I2C_EE_BufferRead((u8*)&key, 0x00, 4)==FALSE) return FALSE;
 
-
-
+	if(key != I2C_KEY) return FALSE;	
+	
+	return I2C_EE_BufferRead(pData, SrcAddress, Length);
+		
+}
 
 
 

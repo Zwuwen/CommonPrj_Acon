@@ -153,16 +153,24 @@ void SyncData_UpdatePeriod_InIrq(void)
   * @param  
   * @retval res
   */
-int HA_Process(AIAMODULE *module)
+int HA_Process(AIAMODULE *module)/*SYNCA*/
 {
-//	CHECK_RANGE_PARAM_1(1, 62);
-//	
-//	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
-//	SendModuleResponse(module);
 
-//	ModuleCore_ModifyAddress(module->recvParams[0]);
+	if(module->validParams == 1)
+	{
+		SyncData.uploadPeriod = module->recvParams[0];				
+	}
+	else
+	{
+		SyncData.uploadPeriod = DEFAULT_SYNCDATA_UPLOAD_PERIOD;
+	}
 	
-	return RESPONSE_IN_PROCESS;
+	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+	
+	SyncData.periodCount_Total = SyncData.uploadPeriod / UPDATE_SYNCDATAFLAG_IRQ_MS;
+	SyncData.flag.Bit.syncTask = 1;
+	
+	return PREPARE_IN_PROCESS;
 }
 
 
@@ -171,16 +179,15 @@ int HA_Process(AIAMODULE *module)
   * @param  
   * @retval res
   */
-int HB_Process(AIAMODULE *module)
+int HB_Process(AIAMODULE *module) /*SYNCZ*/
 {
-//	CHECK_RANGE_PARAM_1(1, 62);
-//	
-//	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
-//	SendModuleResponse(module);
+	CHECK_PARAM_NUMBER(0);
 
-//	ModuleCore_ModifyAddress(module->recvParams[0]);
+	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
 	
-	return RESPONSE_IN_PROCESS;
+	SyncData.flag.Bit.syncTask = 0;
+	
+	return PREPARE_IN_PROCESS;
 }
 
 
@@ -201,85 +208,3 @@ int SYNC_CmdProcess(AIAMODULE *module, int cmdword)
 	
 	return ret;
 }
-	
-
-/**
-  * @brief  
-  * @param  *CmdStr: Command Word
-  * @param  *Cmd: Receive Buf.
-  * @retval ret
-  */
-int SYNC_Command_Func(char *CmdStr, char *Cmd)
-{
-	int isSynccmd;
-	char AnswerStr[50];
-	int ret;
-	int firstalign;
-	ret = ERR_PARAM;
-	isSynccmd = 0;
-	
-	firstalign = (Cmd[1] == '&') ? 1 : 0;
-	
-	if(strcmp(CmdStr, "SYNCA") == 0)
-	{
-		/*LEN &1SYNCA*/
-		int val[1];
-		ret = ERR_PARAM;
-//		if(ParseCmdParam(Cmd + firstalign, val, 1) == 1)
-		{
-			SyncData.uploadPeriod = val[0];				
-		}
-//		else
-		{
-			SyncData.uploadPeriod = DEFAULT_SYNCDATA_UPLOAD_PERIOD;
-		}
-		SyncData.periodCount_Total = SyncData.uploadPeriod / UPDATE_SYNCDATAFLAG_IRQ_MS;
-		SyncData.flag.Bit.syncTask = 1;
-		isSynccmd = 1;
-		ret = PASS;	
-		
-//		sprintf(AnswerStr,"&%cOK %s\r", ModuleAdressChar, SYNCDATA_FORMAT);
-//		
-//		CANSendString(AnswerStr, ModuleAdress);	
-		return 1;
-	}
-	else if(strcmp(CmdStr,"SYNCZ") == 0)
-	{
-		SyncData.flag.Bit.syncTask = 0;
-		ret = PASS;
-		isSynccmd = 1;
-	}
-
-	if(isSynccmd == 1)
-	{
-//		ResponseCmdByCan(ret);
-		return 1;
-	}
-	return  0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

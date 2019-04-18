@@ -29,6 +29,15 @@
 
 #define I2CWAITCOUNT 30000
 
+
+#define EEROM_ADDR_START_MOTOR 4
+#define EEROM_ADDR_END_MOTOR 256
+
+#define AT24C128		1
+#define AT24C256		2
+
+#define EEPROM_MODEL	AT24C256
+
 #define EEPROM_Block0_ADDRESS 0xA0
 #define EEPROM_Block1_ADDRESS 0xA2 
 #define EEPROM_Block2_ADDRESS 0xA4 
@@ -57,6 +66,14 @@
 #define I2C_CHANNEL	(I2C1)
 #define I2C_RCC_APBPeriph_I2C	(RCC_APB1Periph_I2C1)
 #define I2C_RCC_APBPeriph_GPIO	(RCC_APB2Periph_GPIOB)
+
+#else
+#define I2C_GPIO	(GPIOB)
+#define I2C_SCL_PIN	(GPIO_Pin_6)
+#define I2C_SDA_PIN	(GPIO_Pin_7)
+#define I2C_CHANNEL	(I2C1)
+#define I2C_RCC_APBPeriph_I2C	(RCC_APB1Periph_I2C1)
+#define I2C_RCC_APBPeriph_GPIO	(RCC_APB2Periph_GPIOB)
 #endif
 
 
@@ -64,12 +81,14 @@
 
 /* Exported functions ------------------------------------------------------------*/
 void IIC_Driver_Init(void);
-BOOL I2C_EE_BufferWrite(u8* pBuffer, u8 WriteAddr, u16 NumByteToWrite);
-BOOL I2C_EE_ByteWrite(u8* pBuffer, u8 WriteAddr);
-BOOL I2C_EE_PageWrite(u8* pBuffer, u8 WriteAddr, u8 NumByteToWrite);
-BOOL I2C_EE_BufferRead(u8* pBuffer, u8 ReadAddr, u16 NumByteToRead);
+BOOL I2C_EE_BufferWrite(u8* pBuffer, u16 WriteAddr, u16 NumByteToWrite);
+BOOL I2C_EE_ByteWrite(u8* pBuffer, u16 WriteAddr);
+BOOL I2C_EE_PageWrite(u8* pBuffer, u16 WriteAddr, u8 NumByteToWrite);
+BOOL I2C_EE_BufferRead(u8* pBuffer, u16 ReadAddr, u16 NumByteToRead);
 BOOL I2C_EE_WaitEepromStandbyState(void);
 
+BOOL SaveDataToI2cEprom(u8 *pData,u32 Address, u32 Length);
+BOOL RestoreDataFromI2cEprom(u8 *pData,u32 Address, u32 Length);
 
 #endif
 

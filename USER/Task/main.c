@@ -69,7 +69,7 @@ int main(void)
 	ModuleCore_Init(DemoTask_CmdProcess);
 	
 	//////Can Filter///////////	
-	CAN_Filter_Config(CanFilterSignature, FILTER_FRAMEID_NUMBER);
+	CAN_Filter_Config(CanFilterSignature, sizeof(CanFilterSignature));//FILTER_FRAMEID_NUMBER
 	
 
 	if (SysTick_Config(SystemCoreClock/1000)) /* 1ms */
@@ -118,6 +118,7 @@ void NVIC_Config(void)
     #else  /* VECT_TAB_FLASH  */
 	/* Set the Vector Table base location at 0x08000000 */ 
 	NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x2000);   
+	//NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0000);
     #endif
 
 	/* 1 bit for pre-emption priority, 3 bits for subpriority */

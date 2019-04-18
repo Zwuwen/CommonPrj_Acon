@@ -5,8 +5,31 @@
 #include "CAN_Driver.h"
 #include "string.h"
 
+#include "AIA_Persistence.h"
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int FT_Process(AIAMODULE *module)
+{
+	int i;
+	for(i= 0;i<5*1024;i++)
+	{
+		PersistenceParams.moduleId[i] = 3;
+	}
+	PLL_SaveParams((char*)&PersistenceParams,sizeof(PersistenceParams));
+	for(i= 0;i<5*1024;i++)
+	{
+		PersistenceParams.moduleId[i] = 4;
+	}
+	
+	PLL_ReadParams((char*)&PersistenceParams,sizeof(PersistenceParams));
+	
+	PrepareResponseBuf(module, "%d,%d", EXECUTE_SUCCESS, module->address);
 
-
+	return PREPARE_IN_PROCESS;	
+}
 
 int DemoTask_CmdProcess(AIAMODULE *module, int cmdword)
 {
@@ -15,6 +38,7 @@ int DemoTask_CmdProcess(AIAMODULE *module, int cmdword)
 	/*Reserved Cmd*/
 	switch(cmdword)
 	{
+		CASE_REGISTER_CMD_PROCESS(FT, 'F', 'T');	/*Save Params*/
 //		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
 //		CASE_REGISTER_CMD_PROCESS(RV, 'R', 'V');	/*Read Version*/
 //		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'A');	/*Set Address*/
@@ -23,14 +47,6 @@ int DemoTask_CmdProcess(AIAMODULE *module, int cmdword)
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
-	}
-	
-	if(ret == ERR_CMDNOTIMPLEMENT)
-	{
-		if(module->UserDefineProcess != NULL)
-		{
-			ret = module->UserDefineProcess(module, cmdword);
-		}	
 	}
 	
 	return ret;

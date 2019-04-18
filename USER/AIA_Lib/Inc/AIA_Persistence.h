@@ -23,7 +23,7 @@
   */ 
 typedef	struct _PERSISTENCE_PARAM
 {
-	char moduleId;
+	char moduleId[5*1024];
 
 }PERSISTENCE_PARAM;
 

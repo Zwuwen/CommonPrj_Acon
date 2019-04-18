@@ -38,7 +38,7 @@
 #define CAST_pCHAR(i)	 cast(char*, (i))
 
 
-#define UPDATE_SYNCDATAFLAG_IRQ_MS 10	/*timer interrupt period 10ms to update Count_dt*/
+#define UPDATE_SYNCDATAFLAG_IRQ_MS 1	/*timer interrupt period 10ms to update Count_dt*/
 #define DEFAULT_SYNCDATA_UPLOAD_PERIOD 100	/*100ms*/
 
 ////////Modify here/////////////

@@ -19,29 +19,27 @@
 
 PERSISTENCE_PARAM PersistenceParams;
 
-
+//PLL_SaveParams(&PersistenceParams, sizeof(PERSISTENCE_PARAM));
 
 BOOL PLL_SaveParams(char *pbuf, int length)
 {
 #ifndef PARAM_SOURCE
 #error "PARAM_SOURCE Not Defined!"
+	
 #elif (PARAM_SOURCE == I2C_2) || (PARAM_SOURCE == I2C_1)
-
-
 	
+	if(length>(EEROM_ADDR_END_MOTOR - EEROM_ADDR_START_MOTOR)) return FALSE;
 	
-
+	return SaveDataToI2cEprom((u8*)pbuf,EEROM_ADDR_START_MOTOR,length);	
+	
 #elif PARAM_SOURCE == FLASH_3
-
-
 	
+	if(length>(FLASH_ADDR_END_MOTOR-FLASH_ADDR_START_MOTOR)) return FALSE;
 	
+	return SaveDataToFlash((u32*)pbuf,FLASH_ADDR_START_MOTOR,length);	/*param must 4 byte aline*/	
 #endif
-	return TRUE;
+	
 }
-
-
-
 
 
 BOOL PLL_ReadParams(char *pbuf, int length)
@@ -50,17 +48,17 @@ BOOL PLL_ReadParams(char *pbuf, int length)
 #error "PARAM_SOURCE Not Defined!"
 #elif (PARAM_SOURCE == I2C_2) || (PARAM_SOURCE == I2C_1)
 
-
+	if(length>(EEROM_ADDR_END_MOTOR - EEROM_ADDR_START_MOTOR)) return FALSE;
 	
-	
+	return RestoreDataFromI2cEprom((u8*)pbuf,EEROM_ADDR_START_MOTOR,length);
 
 #elif PARAM_SOURCE == FLASH_3
-
-
 	
+	if(length>(FLASH_ADDR_END_MOTOR-FLASH_ADDR_START_MOTOR)) return FALSE;
+	
+	return RestoreDataFromFlash((u32*)pbuf,FLASH_ADDR_START_MOTOR,length);
 	
 #endif
-	return TRUE;
 }
 
 

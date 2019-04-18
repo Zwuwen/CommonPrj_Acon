@@ -300,105 +300,96 @@ int LVPID_PID_Control(_LVPIDPARAM *lvpid)
 	return lvpid->implementMV(output);
 }
 
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int PA_Process(AIAMODULE *module) /* "PID_STOP"*/
+{	
+	CHECK_RANGE_PARAM_1(0,3);
+	
+	LVPID[module->recvParams[0]].flag.Bit.enablePIDTask = 0;
+	LVPID[module->recvParams[0]].implementMV(0);		
 
+	return PASS;
+}
 
 
 /**
   * @brief  
-  * @param  *CmdStr: Command Word
-  * @param  *Cmd: Receive Buf.
-  * @retval ret
+  * @param  
+  * @retval res
   */
-int PID_Command_Func(char *CmdStr, char *Cmd)
-{
-	int isPIDcmd;
-	char AnswerStr[50];
-	int ret;
-	int firstalign;
-	_LVPIDPARAM *tmpPID;
-	ret = ERR_PARAM;
-	isPIDcmd = 0;
+int PB_Process(AIAMODULE *module) /* "PID_START" */
+{	
+	CHECK_RANGE_PARAM_1(0,3);
 	
-	firstalign = (Cmd[1] == '&') ? 1 : 0;
-	
-	if(strcmp(CmdStr, "PID_STOP") == 0)
-	{
-		/*LEN &1STOP_PID*/
-		int val[1];
-		ret = ERR_PARAM;
-//		if((ParseCmdParam(Cmd + firstalign, val, 1) == 1) && X_InRange(val[0], 0, 3))
-		{
-			LVPID[val[0]].flag.Bit.enablePIDTask = 0;
-			LVPID[val[0]].implementMV(0);
-			ret = PASS;			
-		}
-		isPIDcmd = 1;
-	}
-	else if(strcmp(CmdStr, "PID_START") == 0) 
-	{
-		/*LEN &1START_PID*/
-		int val[1];
-		ret = ERR_PARAM;
-//		if((ParseCmdParam(Cmd + firstalign, val, 1) == 1) && X_InRange(val[0], 0, 3))
-		{
-			LVPID_Init_or_Reset(&LVPID[val[0]]);
-			LVPID[val[0]].flag.Bit.enablePIDTask = 1;
-			LVPID[val[0]].flag.Bit.regulationOnce = 1; /*Regulate immediately*/
-			ret = PASS;			
-		}
-		isPIDcmd = 1;
-	}
-	else if(strcmp(CmdStr, "SETPID") == 0)
-	{
-		int val[5];
-		ret = ERR_PARAM;
-//		if((ParseCmdParam(Cmd + firstalign, val, 5) == 5) && X_InRange(val[0], 0, 3))
-		{
-			LVPID_SetGainAndDt(&LVPID[val[0]], val[1], val[2], val[3], val[4]);
-			ret = PASS;	
-		}
-		isPIDcmd = 1;			
-	}
-	else if(strcmp(CmdStr, "GETPID") == 0)
-	{
-		/*Len &1GETPID 0*/
-		if((Cmd[10] >= '0') && (Cmd[10] <= '3'))
-		{
-			tmpPID =  &LVPID[Cmd[10] - '0'];
-//			sprintf(AnswerStr,"&%cOK %d %d %d %d %d %d %c\r", ModuleAdressChar, 
-//					tmpPID->Kp, tmpPID->Ti, tmpPID->Td, 
-//					tmpPID->dt, *(tmpPID->pSV), *(tmpPID->pPV), tmpPID->flag.Bit.enablePIDTask + '0');
-		}
-		else
-		{
-//			sprintf(AnswerStr,"&%cERR 3\r", ModuleAdressChar);				
-		}
-//		CANSendString(AnswerStr, ModuleAdress);	
-		isPIDcmd = 1;
-		return 1;
-		
-	}
-	else if(strcmp(CmdStr,"SETMV") == 0)
-	{
-		int val[2];
-		ret = ERR_PARAM;
-//		if((ParseCmdParam(Cmd+1, val, 2) == 2) && X_InRange(val[0], 0, 3))
-		{
-			LVPID[val[0]].implementMV(val[1]);
-			ret = PASS;
-		}
-		isPIDcmd = 1;		
-	}
+	LVPID_Init_or_Reset(&LVPID[module->recvParams[0]]);
+	LVPID[module->recvParams[0]].flag.Bit.enablePIDTask = 1;
+	LVPID[module->recvParams[0]].flag.Bit.regulationOnce = 1; /*Regulate immediately*/
 
-	if(isPIDcmd == 1)
-	{
-//		ResponseCmdByCan(ret);
-		return 1;
-	}
-	return  0;
+	return PASS;
+}
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int PC_Process(AIAMODULE *module) /* SETPID */
+{
+	CHECK_PARAM_NUMBER(5);
+	CHECK_RANGE_PARAM_1(0,3);
+	
+	LVPID_SetGainAndDt(&LVPID[module->recvParams[0]], module->recvParams[1], module->recvParams[2], module->recvParams[3], module->recvParams[4]);	
+
+	return PASS;
+}
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int PD_Process(AIAMODULE *module) /* "GETPID" */
+{	
+	CHECK_RANGE_PARAM_1(0,3);
+	
+	PrepareResponseBuf(module, "%d %d %d %d %d %d %d %c\r", EXECUTE_SUCCESS, 
+		LVPID[module->recvParams[0]].Kp, LVPID[module->recvParams[0]].Ti, LVPID[module->recvParams[0]].Td, 
+		LVPID[module->recvParams[0]].dt, *(LVPID[module->recvParams[0]].pSV), *(LVPID[module->recvParams[0]].pPV), LVPID[module->recvParams[0]].flag.Bit.enablePIDTask + '0');
+		
+	return PREPARE_IN_PROCESS;
+}
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int PE_Process(AIAMODULE *module) /* "SETMV" */
+{
+	CHECK_PARAM_NUMBER(5);
+	CHECK_RANGE_PARAM_1(0,3);
+
+	LVPID[module->recvParams[0]].implementMV(module->recvParams[1]);
+
+	return PASS;
 }
 
-
-
-
-
+int PID_CmdProcess(AIAMODULE *module, int cmdword)
+{
+	int ret;
+	
+	switch(cmdword)
+	{
+		CASE_REGISTER_CMD_PROCESS(PA, 'P', 'A');	/* PID_STOP */
+		CASE_REGISTER_CMD_PROCESS(PB, 'P', 'B');	/* PID_START */
+		CASE_REGISTER_CMD_PROCESS(PC, 'P', 'C');	/* SETPID */
+		CASE_REGISTER_CMD_PROCESS(PD, 'P', 'D');	/* "GETPID" */
+		CASE_REGISTER_CMD_PROCESS(PE, 'P', 'E');	/* "SETMV" */
+		default:
+			ret = ERR_CMDNOTIMPLEMENT;
+		break;		
+	}
+	
+	return ret;
+}

@@ -27,13 +27,18 @@ const char IdChar[] = { '0','1','2','3','4','5','6','7','8','9',
 	
 /*-------Used here--------*/	
 int SYNC_CmdProcess(AIAMODULE *module, int cmdword);
-	
+int PID_CmdProcess(AIAMODULE *module, int cmdword);
 
 int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword);
 int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword);	
 
 	
-	
+	//ModuleCore_Server_InSysTickIrq()
+//	{
+//	SYNC
+//	PID
+//	}
+//	
 /**
   * @brief  Initialize the CAN peripheral.
   * @param  moduleId: CoreModule Device id.
@@ -53,6 +58,7 @@ void ModuleCore_Init(void* userDefineFunc)
 	
 	ModuleCore.BoardCastProcess = ModuleCore_BroadcastCmdProcess;
 	ModuleCore.NormalProcess = ModuleCore_NormalCmdProcess;
+	ModuleCore.UserDefineProcess = userDefineFunc;
 	
 	CanFilterSignature[0] = ModuleCore.normalRecvSignature;	
 	CanFilterSignature[1] = ModuleCore.boardcastRecvSignature;
@@ -143,8 +149,6 @@ int SA_Process(AIAMODULE *module)
 	return RESPONSE_IN_PROCESS;
 }
 
-
-
 /**
   * @brief  
   * @param  
@@ -194,9 +198,11 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 		if(ret != ERR_CMDNOTIMPLEMENT)
 			return ret;		
 #endif		
-		
-		
-		
+
+#if ENABLE_AIA_PID == 1
+		ret = PID_CmdProcess(module, cmdword);
+		if(ret != ERR_CMDNOTIMPLEMENT) return ret;	
+#endif		
 		if(module->UserDefineProcess != NULL)
 		{
 			ret = module->UserDefineProcess(module, cmdword);
