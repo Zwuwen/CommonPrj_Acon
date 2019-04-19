@@ -11,7 +11,7 @@
 
 
 __IO uint16_t ADC_ConvertedValue[Sample_Num][Channel_Num];
-u16 AD_After_Filter[Channel_Num];
+u16 ADC_Value[Channel_Num];
 
 /**
   * @brief  初始化ADC引脚
@@ -22,6 +22,7 @@ static void ADC_GPIO_Config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+	
 	//TODO
   	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6|GPIO_Pin_7;
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -64,12 +65,16 @@ static void ADC_Mode_Config(void)
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
 	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	//TODO
-	ADC_InitStructure.ADC_NbrOfChannel =2;
+	ADC_InitStructure.ADC_NbrOfChannel =Channel_Num;
 	ADC_Init(ADC1,&ADC_InitStructure);
+	
+	
 	//TODO
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_6,1, ADC_SampleTime_239Cycles5);
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_7,2, ADC_SampleTime_239Cycles5);
+	
+	
+	
 	ADC_DMACmd(ADC1,ENABLE);
 	ADC_Cmd(ADC1, ENABLE);
 	ADC_ResetCalibration(ADC1);
@@ -98,15 +103,17 @@ void ADC_Driver_Init(void)
   * @param  None
   * @retval ADC1_CH2_MainValue ADC采样的值
   */
-u16 Read_ADC_AverageValue(int Channel)
+void Updata_Adc_Value(void)
 {
-	u8 t;
-	u32 sum = 0;
-	for(t=0;t<Sample_Num;t++)
+	int i=0,j=0,sum=0;
+	for(;i<Channel_Num;i++)
 	{
-		sum += ADC_ConvertedValue[t][Channel];
+		sum=0;
+		for(j=0;j<Sample_Num;j++)
+		{
+			sum += ADC_ConvertedValue[j][i];
+		}
+		ADC_Value[i]=sum/Sample_Num;
 	}
-	AD_After_Filter[Channel] = sum/Sample_Num;
-	return AD_After_Filter[Channel];
 }
 

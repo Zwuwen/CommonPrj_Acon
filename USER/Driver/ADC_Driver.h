@@ -23,8 +23,8 @@
 #define ADC_IN_PIN2		GPIO_Pin_7
 #define ADC_IN_GPIO	GPIOA
 
+extern u16 ADC_Value[Channel_Num];
 /* Exported functions ------------------------------------------------------- */
 void ADC_Driver_Init(void);
-u16 Read_ADC_AverageValue(int Channel);
-
+void Updata_Adc_Value(void);
 #endif
