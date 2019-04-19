@@ -579,9 +579,9 @@ int BOOT_CmdProcess(AIAMODULE *module, int cmdword)
 	
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(QA, 'Q', 'A');	/* "BOOTLOAD" */
-		CASE_REGISTER_CMD_PROCESS(QB, 'Q', 'B');	/* "UPDATEBT" */
-		CASE_REGISTER_CMD_PROCESS(QC, 'Q', 'C');	/* "ES" */
+		CASE_REGISTER_CMD_PROCESS(QA);	/* "BOOTLOAD" */
+		CASE_REGISTER_CMD_PROCESS(QB);	/* "UPDATEBT" */
+		CASE_REGISTER_CMD_PROCESS(QC);	/* "ES" */
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		

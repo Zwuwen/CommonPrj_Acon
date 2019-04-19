@@ -178,7 +178,7 @@ int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword)
 	int ret;
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
+		CASE_REGISTER_CMD_PROCESS(RA);	/*Read address*/
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
@@ -198,10 +198,10 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 	/*Reserved Cmd*/
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
-		CASE_REGISTER_CMD_PROCESS(RV, 'R', 'V');	/*Read Version*/
-		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'A');	/*Set Address*/
-		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'P');	/*Save Params*/
+		CASE_REGISTER_CMD_PROCESS(RA);	/*Read address*/
+		CASE_REGISTER_CMD_PROCESS(RV);	/*Read Version*/
+		CASE_REGISTER_CMD_PROCESS(SA);	/*Set Address*/
+		//CASE_REGISTER_CMD_PROCESS(SA);	/*Save Params*/
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		

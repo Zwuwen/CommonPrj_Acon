@@ -198,8 +198,8 @@ int SYNC_CmdProcess(AIAMODULE *module, int cmdword)
 	
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(HA, 'H', 'A');	/**/
-		CASE_REGISTER_CMD_PROCESS(HB, 'H', 'B');	/**/
+		CASE_REGISTER_CMD_PROCESS(HA);	/**/
+		CASE_REGISTER_CMD_PROCESS(HB);	/**/
 		
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;

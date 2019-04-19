@@ -224,7 +224,7 @@ int ProcessNewCmd(AIAMODULE *module)
 		return ERR_SEQUENCE;
 	}
 	
-	cmdWord = UPCASE2INT(pFrame->cmdHigh, pFrame->cmdLow);
+	cmdWord = TWOCHAR2INT(pFrame->cmdHigh, pFrame->cmdLow);
 	module->validParams = ParseCmdParam(pFrame->buf, module->recvParams, MAXIMUM_SUPPORT_RECV_PARAMS);
 	
 	if(pFrame->bcflag == 1) /*board cast cmd only support the RA*/

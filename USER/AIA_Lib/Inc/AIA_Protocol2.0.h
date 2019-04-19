@@ -22,10 +22,18 @@
 #define EXECUTE_SUCCESS 0
 
 
-#define UPCASE2INT(A,B) ((A-'A')*26u + (B-'A'))
-#define CASE_REGISTER_CMD_PROCESS(AB,A,B) 		case UPCASE2INT(A,B):\
+
+#define UPCASE2INT(AB) (int)(((#AB)[0]-'A')*26u + ((#AB)[1]-'A'))
+#define CASE_REGISTER_CMD_PROCESS(AB) 		case UPCASE2INT(AB):\
 												ret = AB##_Process(module);\
 												break
+
+#define TWOCHAR2INT(A,B) ((A-'A')*26u + (B-'A'))
+
+//#define UPCASE2INT(A,B) ((A-'A')*26u + (B-'A'))
+//#define CASE_REGISTER_CMD_PROCESS(AB,A,B) 		case UPCASE2INT(A,B):\
+//												ret = AB##_Process(module);\
+//												break
 
 //#define UPCASE2INT(A,B) ((int)(((#A)[0] - 'A')*26 + ((#B)[0] - 'A')))													
 //#define CASE_REGISTER_CMD_PROCESS(A,B) 		case UPCASE2INT(A,B):\
