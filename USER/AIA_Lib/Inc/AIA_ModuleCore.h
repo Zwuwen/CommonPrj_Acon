@@ -49,8 +49,8 @@ typedef struct _FRAMEFORMAT
 	char buf[COMMANDLENGTH-7];
 }FRAMEFORMAT;
 
-
-
+struct _AIAMODULE ;
+typedef int (*CmdProcess_T)(struct _AIAMODULE *module, int cmdword);
 
 typedef	struct _AIAMODULE
 {
@@ -71,10 +71,13 @@ typedef	struct _AIAMODULE
 	
 	FRAMEFORMAT *recvFrame;
 	
-	int (*BoardCastProcess)(struct _AIAMODULE *module, int cmdword);
-	int (*NormalProcess)(struct _AIAMODULE *module, int cmdword);
-	int (*UserDefineProcess)(struct _AIAMODULE *module, int cmdword);
+//	int (*BoardCastProcess)(struct _AIAMODULE *module, int cmdword);
+//	int (*NormalProcess)(struct _AIAMODULE *module, int cmdword);
+//	int (*UserDefineProcess)(struct _AIAMODULE *module, int cmdword);
 	
+	CmdProcess_T NormalProcess;
+	CmdProcess_T BoardCastProcess;
+	CmdProcess_T UserDefineProcess;
 	CMDFIFO fifo;
 	
 	/*Flags*/
@@ -86,6 +89,9 @@ typedef	struct _AIAMODULE
 		int Allbits;
 	}flag;
 }AIAMODULE;
+
+
+
 extern AIAMODULE ModuleCore;
 
 
@@ -93,8 +99,8 @@ extern AIAMODULE ModuleCore;
 extern uint8_t	const HEX_2_ASCII[];
 
 /* Exported functions ------------------------------------------------------- */
-void ModuleCore_Init(void* userDefineFunc);
-
+void ModuleCore_Init(CmdProcess_T userDefineFunc);
+void ModuleCore_Server_InSysTickIrq(void);
 
 
 

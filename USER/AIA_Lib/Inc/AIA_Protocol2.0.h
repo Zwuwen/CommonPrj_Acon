@@ -26,6 +26,11 @@
 #define CASE_REGISTER_CMD_PROCESS(AB,A,B) 		case UPCASE2INT(A,B):\
 												ret = AB##_Process(module);\
 												break
+
+//#define UPCASE2INT(A,B) ((int)(((#A)[0] - 'A')*26 + ((#B)[0] - 'A')))													
+//#define CASE_REGISTER_CMD_PROCESS(A,B) 		case UPCASE2INT(A,B):\
+//												ret = A##B##_Process(module);\
+//												break
 													
 #define CHECK_PARAM_NUMBER(TOTAL)			if(module->validParams != TOTAL) return ERR_PARAM
 #define CHECK_RANGE_PARAM(INDEX, PMIN, PMAX)  	if((module->validParams < INDEX) 		|| 	\

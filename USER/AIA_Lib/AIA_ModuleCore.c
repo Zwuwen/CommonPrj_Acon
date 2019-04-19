@@ -15,6 +15,8 @@
 #include "AIA_Protocol2.0.h"
 #include "AIA_ErrorCode.h"
 #include "CAN_Driver.h"
+#include "AIA_SyncData.h"
+#include "AIA_PID.h"
 #include "string.h"
 
 
@@ -28,23 +30,40 @@ const char IdChar[] = { '0','1','2','3','4','5','6','7','8','9',
 /*-------Used here--------*/	
 int SYNC_CmdProcess(AIAMODULE *module, int cmdword);
 int PID_CmdProcess(AIAMODULE *module, int cmdword);
-
+int BOOT_CmdProcess(AIAMODULE *module, int cmdword);
+	
 int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword);
 int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword);	
 
+/**
+  * @brief  process in SysTickIrq .
+  * @param  None.
+  * @retval None
+  */	
+void ModuleCore_Server_InSysTickIrq(void)
+{
+	int i;	
 	
-	//ModuleCore_Server_InSysTickIrq()
-//	{
-//	SYNC
-//	PID
-//	}
-//	
+#if ENABLE_AIA_SYNC == 1
+	SyncData_UpdatePeriod_InIrq();
+#endif
+	
+#if ENABLE_AIA_PID == 1
+	for(i=0;i<TOTAL_PID_NUMBER;i++)
+	{	
+		LVPID_UpdateSamplingPeriod_InIrq(&LVPID[i]);
+	}
+
+#endif
+	
+}	
 /**
   * @brief  Initialize the CAN peripheral.
   * @param  moduleId: CoreModule Device id.
   * @retval None
   */
-void ModuleCore_Init(void* userDefineFunc)
+  
+void ModuleCore_Init(CmdProcess_T userDefineFunc)
 {
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
@@ -167,9 +186,6 @@ int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword)
 	return ret;
 }
 
-
-
-
 /**
   * @brief  
   * @param  
@@ -203,6 +219,11 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 		ret = PID_CmdProcess(module, cmdword);
 		if(ret != ERR_CMDNOTIMPLEMENT) return ret;	
 #endif		
+		
+#if ENABLE_AIA_BOOTLOAD == 1
+		ret = BOOT_CmdProcess(module, cmdword);
+		if(ret != ERR_CMDNOTIMPLEMENT) return ret;	
+#endif 
 		if(module->UserDefineProcess != NULL)
 		{
 			ret = module->UserDefineProcess(module, cmdword);

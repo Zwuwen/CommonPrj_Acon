@@ -80,7 +80,6 @@ void CAN_Filter_Config(int *frameSignature, int len)
 		
 	for(i=0; i<total; i++)
 	{
-	
 		CAN_FilterInitStructure.CAN_FilterNumber 		= 	i;
 		CAN_FilterInitStructure.CAN_FilterMode 			= 	CAN_FilterMode_IdList;
 		CAN_FilterInitStructure.CAN_FilterScale 		= 	CAN_FilterScale_32bit;

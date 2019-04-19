@@ -247,13 +247,7 @@ int ProcessNewCmd(AIAMODULE *module)
 	
 }
 
-  
-
-
-
-
-
-
+ 
 /**
   * @brief  Convert the ASCII to int, String ending with 'H' means Hexadecimal, 
   *			and Hexadecimal is unsigned. Notice INT overflow, while the string is too long.

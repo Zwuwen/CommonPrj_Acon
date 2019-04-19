@@ -134,10 +134,12 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
+void ModuleCore_Server_InSysTickIrq(void);
 void SysTick_Handler(void)
 {
 	/*1ms*/
 	//Server_InIrq
+	ModuleCore_Server_InSysTickIrq();
 }
 
 /******************************************************************************/
