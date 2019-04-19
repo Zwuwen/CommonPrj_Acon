@@ -38,7 +38,7 @@ int DemoTask_CmdProcess(AIAMODULE *module, int cmdword)
 	/*Reserved Cmd*/
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(FT, 'F', 'T');	/*Save Params*/
+		CASE_REGISTER_CMD_PROCESS(FT);	/*Save Params*/
 //		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
 //		CASE_REGISTER_CMD_PROCESS(RV, 'R', 'V');	/*Read Version*/
 //		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'A');	/*Set Address*/

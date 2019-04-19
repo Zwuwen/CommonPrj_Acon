@@ -30,6 +30,8 @@
 #include "stdio.h"
 #include "string.h"
 
+#define TOCHAR(A) #A
+
 _LVPIDPARAM LVPID[TOTAL_PID_NUMBER];
 
 /**
@@ -354,7 +356,7 @@ int PD_Process(AIAMODULE *module) /* "GETPID" */
 {	
 	CHECK_RANGE_PARAM_1(0,3);
 	
-	PrepareResponseBuf(module, "%d %d %d %d %d %d %d %c\r", EXECUTE_SUCCESS, 
+	PrepareResponseBuf(module, "%d %d %d %d %d %d %d %c", EXECUTE_SUCCESS, 
 		LVPID[module->recvParams[0]].Kp, LVPID[module->recvParams[0]].Ti, LVPID[module->recvParams[0]].Td, 
 		LVPID[module->recvParams[0]].dt, *(LVPID[module->recvParams[0]].pSV), *(LVPID[module->recvParams[0]].pPV), LVPID[module->recvParams[0]].flag.Bit.enablePIDTask + '0');
 		
@@ -367,7 +369,6 @@ int PD_Process(AIAMODULE *module) /* "GETPID" */
   */
 int PE_Process(AIAMODULE *module) /* "SETMV" */
 {
-	CHECK_PARAM_NUMBER(5);
 	CHECK_RANGE_PARAM_1(0,3);
 
 	LVPID[module->recvParams[0]].implementMV(module->recvParams[1]);
@@ -381,11 +382,11 @@ int PID_CmdProcess(AIAMODULE *module, int cmdword)
 	
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(PA, 'P', 'A');	/* PID_STOP */
-		CASE_REGISTER_CMD_PROCESS(PB, 'P', 'B');	/* PID_START */
-		CASE_REGISTER_CMD_PROCESS(PC, 'P', 'C');	/* SETPID */
-		CASE_REGISTER_CMD_PROCESS(PD, 'P', 'D');	/* "GETPID" */
-		CASE_REGISTER_CMD_PROCESS(PE, 'P', 'E');	/* "SETMV" */
+		CASE_REGISTER_CMD_PROCESS(PA);	/* PID_STOP */
+		CASE_REGISTER_CMD_PROCESS(PB);	/* PID_START */
+		CASE_REGISTER_CMD_PROCESS(PC);	/* SETPID */
+		CASE_REGISTER_CMD_PROCESS(PD);	/* "GETPID" */
+		CASE_REGISTER_CMD_PROCESS(PE);	/* "SETMV" */
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		

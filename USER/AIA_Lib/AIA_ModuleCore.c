@@ -15,6 +15,8 @@
 #include "AIA_Protocol2.0.h"
 #include "AIA_ErrorCode.h"
 #include "CAN_Driver.h"
+#include "AIA_SyncData.h"
+#include "AIA_PID.h"
 #include "string.h"
 
 
@@ -28,23 +30,41 @@ const char IdChar[] = { '0','1','2','3','4','5','6','7','8','9',
 /*-------Used here--------*/	
 int SYNC_CmdProcess(AIAMODULE *module, int cmdword);
 int PID_CmdProcess(AIAMODULE *module, int cmdword);
-
+int BOOT_CmdProcess(AIAMODULE *module, int cmdword);
+	
 int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword);
 int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword);	
 
+/**
+  * @brief  process in SysTickIrq .
+  * @param  None.
+  * @retval None
+  */	
+void ModuleCore_Server_InSysTickIrq(void)
+{
+	int i;	
 	
-	//ModuleCore_Server_InSysTickIrq()
-//	{
-//	SYNC
-//	PID
-//	}
-//	
+	if(ModuleCore.delayCount) ModuleCore.delayCount--;
+	
+#if ENABLE_AIA_SYNC == 1
+	SyncData_UpdatePeriod_InIrq();
+#endif
+	
+#if ENABLE_AIA_PID == 1
+	for(i=0;i<TOTAL_PID_NUMBER;i++)
+	{	
+		LVPID_UpdateSamplingPeriod_InIrq(&LVPID[i]);
+	}
+#endif
+	
+}	
 /**
   * @brief  Initialize the CAN peripheral.
   * @param  moduleId: CoreModule Device id.
   * @retval None
   */
-void ModuleCore_Init(void* userDefineFunc)
+  
+void ModuleCore_Init(CmdProcess_T userDefineFunc)
 {
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
@@ -159,16 +179,13 @@ int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword)
 	int ret;
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
+		CASE_REGISTER_CMD_PROCESS(RA);	/*Read address*/
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
 	}	
 	return ret;
 }
-
-
-
 
 /**
   * @brief  
@@ -182,10 +199,10 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 	/*Reserved Cmd*/
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(RA, 'R', 'A');	/*Read address*/
-		CASE_REGISTER_CMD_PROCESS(RV, 'R', 'V');	/*Read Version*/
-		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'A');	/*Set Address*/
-		CASE_REGISTER_CMD_PROCESS(SA, 'S', 'P');	/*Save Params*/
+		CASE_REGISTER_CMD_PROCESS(RA);	/*Read address*/
+		CASE_REGISTER_CMD_PROCESS(RV);	/*Read Version*/
+		CASE_REGISTER_CMD_PROCESS(SA);	/*Set Address*/
+		//CASE_REGISTER_CMD_PROCESS(SA);	/*Save Params*/
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
@@ -203,6 +220,11 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 		ret = PID_CmdProcess(module, cmdword);
 		if(ret != ERR_CMDNOTIMPLEMENT) return ret;	
 #endif		
+		
+#if ENABLE_AIA_BOOTLOAD == 1
+		ret = BOOT_CmdProcess(module, cmdword);
+		if(ret != ERR_CMDNOTIMPLEMENT) return ret;	
+#endif 
 		if(module->UserDefineProcess != NULL)
 		{
 			ret = module->UserDefineProcess(module, cmdword);

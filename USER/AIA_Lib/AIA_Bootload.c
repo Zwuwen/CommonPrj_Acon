@@ -18,6 +18,8 @@
   ******************************************************************************/
 #include "AIA_Bootload.h"
 #include "AIA_Utilities.h"
+#include "AIA_Protocol2.0.h"
+#include "AIA_ErrorCode.h"
 #include "CAN_Driver.h"
 #include "string.h"
 #include "stdio.h"
@@ -293,7 +295,6 @@ void SendCanResp(CMDTYPE Cmd, u8 Status)
 }
 
 
-
 /**
   * @brief  将程序数据写入指定Flash地址
   * @param  Address 起始地址
@@ -404,8 +405,6 @@ void ProcessCanCMD(void)
 }
 
 
-
-
 int BootLoad_ServerInIrq(CanRxMsg* RxMsg, int deviceId)
 {
 	u32 DecryptedByte;
@@ -476,8 +475,120 @@ int BootLoad_ServerInIrq(CanRxMsg* RxMsg, int deviceId)
 
 }
 
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int QA_Process(AIAMODULE *module) /* "BOOTLOAD" */
+{	
+	char AnswerStr[20];
+	int bootcode;
+	int readboot;
+	int ModuleAdress;
+		
+	CHECK_PARAM_NUMBER(1);
+	
+	ModuleAdress = module->address;
+	bootcode = ((ModuleAdress<<24)| (ModuleAdress<<16)| (ModuleAdress<<8)| ModuleAdress);
+	
+	//readboot <<= 16;
+	//readboot |= atou16((char *)&module->recvParams[4],16);
+	readboot = atou16((char *)&module->recvParams[0],16);
 
+	if(bootcode == readboot)	
+	{
+		/*正确的指令，可以开始烧写*/
+		if(WriteBootCodeIntoFlash(ModuleAdress))
+		{				
+//			PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+//			SendModuleResponse(module);
 
+			sprintf(AnswerStr,"&%cOK\r",module->addressChar);
+			CANSendStringStd(AnswerStr, ModuleAdress);	
+	
+			/* reset*/
+			__disable_fault_irq();  
+			NVIC_SystemReset();	
+			
+			return RESPONSE_IN_PROCESS;
+		}
+	}
+	return FAIL;
+}
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int QB_Process(AIAMODULE *module) /* "UPDATEBT" */
+{
+	char AnswerStr[20];
+	int bootcode;
+	int ModuleAdress;
+	
+	CHECK_PARAM_NUMBER(1);
+
+	ModuleAdress = module->address;
+	bootcode = ((ModuleAdress<<24)| (ModuleAdress<<16)| (ModuleAdress<<8)| ModuleAdress);
+	BOOTFlag.Allbits = 0x0000;
+	
+		
+	//if(bootcode == ((atou16((char *)&module->recvParams[0],16) << 16) | (atou16((char *)&module->recvParams[4],16))))
+	if(bootcode == atou16((char *)&module->recvParams[0],16))
+	{
+//		PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+//		SendModuleResponse(module);
+		
+		sprintf(AnswerStr,"&%cOK\r",module->addressChar);
+		CANSendStringStd(AnswerStr, ModuleAdress);		
+		
+		Bootload_CanInit(ModuleAdress);
+		BOOTFlag.Bit.EnterUpdateMode = 1;
+		
+		ChunkSumXor = 0;
+		CurrentSeq = 0;
+
+		FLASH_Unlock();  /**/
+	
+		while(1)
+		{
+			if(BOOTFlag.Bit.CanNewFrame)
+			{
+				ProcessCanCMD();
+				BOOTFlag.Bit.CanNewFrame = 0;	
+			}		
+		}		
+	}
+	return FAIL;
+}
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int QC_Process(AIAMODULE *module) /* "ES" */
+{
+	PrepareResponseBuf(module, "%08X", EXECUTE_SUCCESS);
+	return PREPARE_IN_PROCESS;
+}
+
+int BOOT_CmdProcess(AIAMODULE *module, int cmdword)
+{
+	int ret;
+	
+	switch(cmdword)
+	{
+		CASE_REGISTER_CMD_PROCESS(QA);	/* "BOOTLOAD" */
+		CASE_REGISTER_CMD_PROCESS(QB);	/* "UPDATEBT" */
+		CASE_REGISTER_CMD_PROCESS(QC);	/* "ES" */
+		default:
+			ret = ERR_CMDNOTIMPLEMENT;
+		break;		
+	}
+	
+	return ret;
+}
 
 
 
