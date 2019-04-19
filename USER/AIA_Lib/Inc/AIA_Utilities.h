@@ -43,8 +43,7 @@
 #define IsInRange(x, H, L) ((x<=H) && (x>=L))
 
 								
-#define DELAY_10MS(TIMEMS) Delay_Count = TIMEMS; while(Delay_Count!=0)
-
+#define DELAY_1MS(TIMEMS) ModuleCore.delayCount = TIMEMS; while(ModuleCore.delayCount != 0)
 
 /* Exported typedef ------------------------------------------------------------*/
 /** 

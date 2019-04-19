@@ -138,7 +138,6 @@ void ModuleCore_Server_InSysTickIrq(void);
 void SysTick_Handler(void)
 {
 	/*1ms*/
-	//Server_InIrq
 	ModuleCore_Server_InSysTickIrq();
 }
 

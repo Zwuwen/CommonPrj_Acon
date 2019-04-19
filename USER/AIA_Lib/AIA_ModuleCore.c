@@ -44,6 +44,8 @@ void ModuleCore_Server_InSysTickIrq(void)
 {
 	int i;	
 	
+	if(ModuleCore.delayCount) ModuleCore.delayCount--;
+	
 #if ENABLE_AIA_SYNC == 1
 	SyncData_UpdatePeriod_InIrq();
 #endif
@@ -53,7 +55,6 @@ void ModuleCore_Server_InSysTickIrq(void)
 	{	
 		LVPID_UpdateSamplingPeriod_InIrq(&LVPID[i]);
 	}
-
 #endif
 	
 }	

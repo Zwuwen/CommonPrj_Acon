@@ -60,6 +60,8 @@ typedef	struct _AIAMODULE
 	char sequence; /* '1'~ '9' : '0' means needn't to match seq.*/
 	char dummys[1];
 	
+	int delayCount;
+	
 	int normalRecvSignature;
 	int boardcastRecvSignature;
 	
