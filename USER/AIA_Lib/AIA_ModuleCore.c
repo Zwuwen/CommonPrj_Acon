@@ -111,25 +111,40 @@ void ModuleCore_ModifyAddress(int address)
 
 
 /**
-  * @brief  RA Read Address.
+  * @brief  XA Read Address.
   * @param  
   * @retval res
   */
-int RA_Process(AIAMODULE *module)
+int XA_Process(AIAMODULE *module)
 { 
 	PrepareResponseBuf(module, "%d,%d", EXECUTE_SUCCESS, module->address);
 
 	return PREPARE_IN_PROCESS;	
 }
 
-
-
 /**
-  * @brief  
+  * @brief   XB Set Address
   * @param  
   * @retval res
   */
-int RV_Process(AIAMODULE *module)
+int XB_Process(AIAMODULE *module)
+{
+	CHECK_RANGE_PARAM_1(1, 62);
+	
+	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+	SendModuleResponse(module);
+
+	ModuleCore_ModifyAddress(module->recvParams[0]);
+			
+	return RESPONSE_IN_PROCESS;
+}
+
+/**
+  * @brief  XC Read Vertion.
+  * @param  
+  * @retval res
+  */
+int XC_Process(AIAMODULE *module)
 {
 	if(module->validParams == 0)
 	{
@@ -152,27 +167,11 @@ int RV_Process(AIAMODULE *module)
 }
 
 /**
-  * @brief  
+  * @brief  XD Save Param
   * @param  
   * @retval res
   */
-int SA_Process(AIAMODULE *module)
-{
-	CHECK_RANGE_PARAM_1(1, 62);
-	
-	PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
-	SendModuleResponse(module);
-
-	ModuleCore_ModifyAddress(module->recvParams[0]);
-			
-	return RESPONSE_IN_PROCESS;
-}
-/**
-  * @brief  
-  * @param  
-  * @retval res
-  */
-int SV_Process(AIAMODULE *module)
+int XD_Process(AIAMODULE *module)
 {
 	u8 i;
 	
@@ -198,7 +197,7 @@ int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword)
 	int ret;
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(RA);	/*Read address*/
+			CASE_REGISTER_CMD_PROCESS(XA);	/*Read address*/
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
@@ -218,10 +217,14 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 	/*Reserved Cmd*/
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(RA);	/*Read address*/
-		CASE_REGISTER_CMD_PROCESS(RV);	/*Read Version*/
-		CASE_REGISTER_CMD_PROCESS(SA);	/*Set Address*/
-		CASE_REGISTER_CMD_PROCESS(SV);	/*Save Params*/
+		CASE_REGISTER_CMD_PROCESS(XA);	/*Read address*/
+		CASE_REGISTER_CMD_PROCESS(XB);	/*Set Address*/
+		CASE_REGISTER_CMD_PROCESS(XC);	/*Read Version*/
+		CASE_REGISTER_CMD_PROCESS(XD);	/*Save Params*/
+		
+		
+		
+		
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
@@ -247,9 +250,8 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 		if(module->UserDefineProcess != NULL)
 		{
 			ret = module->UserDefineProcess(module, cmdword);
-		}	
+		}
 	}
-	
 	return ret;
 }
 
