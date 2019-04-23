@@ -151,82 +151,6 @@ u8 WriteBootCodeIntoFlash(int deviceId)
 }
 
 
-int Bootload_Func(char *CmdStr, char *CmdBuf)
-{
-	char AnswerStr[20];
-	int bootcode;
-	int readboot;
-	
-	int firstalign;
-	firstalign = (CmdBuf[1] == '&') ? 1 : 0;
-	if(strcmp(CmdStr,"BOOTLOAD") == 0) /*len &1BOOTLOAD AABBCCDD*/ 
-	{
-//		bootcode = ((ModuleAdress<<24)| (ModuleAdress<<16)| (ModuleAdress<<8)| ModuleAdress);
-		readboot = atou16(CmdBuf+11+firstalign,16);
-		readboot <<= 16;
-		readboot |= atou16(CmdBuf+15+firstalign,16);
-		
-		if(bootcode == readboot)	
-		{
-			/*正确的指令，可以开始烧写*/
-//			if(WriteBootCodeIntoFlash())
-			{	
-//				sprintf(AnswerStr,"&%cOK\r",ModuleAdressChar);
-//				CANSendStringStd(AnswerStr, ModuleAdress);
-				/* reset*/
-				__disable_fault_irq();  
-				NVIC_SystemReset();	
-			}
-		}
-
-//		sprintf(AnswerStr,"&%cERR 1\r",ModuleAdressChar);
-//		CANSendStringStd(AnswerStr, ModuleAdress);	
-		return 1;	
-	}
-	else if(strcmp(CmdStr,"UPDATEBT") == 0) /*&1UPDATEBT 0A0A0A0A*/
-	{
-//		bootcode = ((ModuleAdress<<24)| (ModuleAdress<<16)| (ModuleAdress<<8)| ModuleAdress);
-		BOOTFlag.Allbits = 0x0000;
-		if(bootcode == ((atou16(CmdBuf+11+firstalign,16) << 16) | (atou16(CmdBuf+15+firstalign,16))))	
-		{
-			AnswerStr[0] = '&';
-//			AnswerStr[1] = ModuleAdressChar;
-			AnswerStr[2] = 'O';
-			AnswerStr[3] = 'K';
-			AnswerStr[4] = '\r';
-			AnswerStr[5] = '\0';			
-
-//			CANSendStringStd(AnswerStr, ModuleAdress);	
-			
-//			Bootload_CanInit();
-			BOOTFlag.Bit.EnterUpdateMode = 1;
-			
-			ChunkSumXor = 0;
-			CurrentSeq = 0;
-
-			FLASH_Unlock();  /**/
-		
-			while(1)
-			{
-				if(BOOTFlag.Bit.CanNewFrame)
-				{
-					ProcessCanCMD();
-					BOOTFlag.Bit.CanNewFrame = 0;	
-				}		
-			}		
-		}
-//		sprintf(AnswerStr,"&%cERR 1\r",ModuleAdressChar);
-//		CANSendStringStd(AnswerStr, ModuleAdress);	
-		return 1;
-	}
-	else if(strcmp(CmdStr,"ES") == 0)
-	{
-//		sprintf(AnswerStr,"&%cOK %08X\r", ModuleAdressChar, CAN1->ESR);
-//		CANSendStringStd(AnswerStr, ModuleAdress);	
-		return 1;	
-	}
-	return  0;
-}
 
 
 /**
@@ -277,19 +201,19 @@ void BTLED_GPIO_Config(void)
   * @retval
   */
 
-void SendCanResp(CMDTYPE Cmd, u8 Status)
+void SendCanResp(int addr, CMDTYPE Cmd, u8 Status)
 {
-//	u8 TransmitMailbox = 0;	
-//	CanTxMsg txMsg;
-//	txMsg.StdId =  0;
-//	txMsg.ExtId = (ModuleAdress | ((u16)Cmd<<8));
-//	txMsg.RTR 	= CAN_RTR_DATA;	
-//	txMsg.IDE 	= CAN_ID_EXT;
-//	txMsg.DLC   = 1;
-//	txMsg.Data[0] = Status;
-//	
-//	TransmitMailbox = CAN_Transmit(CAN1, &txMsg);
-//	while(CAN_TransmitStatus(CAN1,TransmitMailbox) != CANTXOK);
+	u8 TransmitMailbox = 0;	
+	CanTxMsg txMsg;
+	txMsg.StdId =  0;
+	txMsg.ExtId = (addr | ((u32)Cmd<<8));
+	txMsg.RTR 	= CAN_RTR_DATA;	
+	txMsg.IDE 	= CAN_ID_EXT;
+	txMsg.DLC   = 1;
+	txMsg.Data[0] = Status;
+	
+	TransmitMailbox = CAN_Transmit(CAN1, &txMsg);
+	while(CAN_TransmitStatus(CAN1,TransmitMailbox) != CANTXOK);
 
 
 }
@@ -308,7 +232,7 @@ u8 CAN_BOOT_ProgramPage(u32 Addr, u32 Size)
 
 	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
 
-	if(FLASH_COMPLETE != FLASH_ErasePage(Addr)) return 0;	/*擦除一页*/
+	if(FLASH_COMPLETE != FLASH_ErasePage(Addr)) return 0;
 	
 	/* Program Flash Bank1 */
 	while((i < Size) && (FLASHStatus == FLASH_COMPLETE))
@@ -330,7 +254,7 @@ u8 CAN_BOOT_ProgramPage(u32 Addr, u32 Size)
   * @param  。
   * @retval 。
   */
-void ProcessCanCMD(void)
+void ProcessCanCMD(AIAMODULE *module)
 {
 	u8 CmdExcuStatus = 0;
 	u8 AnswerStr[8];
@@ -347,7 +271,7 @@ void ProcessCanCMD(void)
 				ChunkReadIndex = 0;
 				ChunkSum = 0;		
 			}
-			SendCanResp(CMD1_CHUNK_START, CmdExcuStatus);			
+			SendCanResp(module->address, CMD1_CHUNK_START, CmdExcuStatus);			
 		break;
 
 		case CMD3_CHUNK_END:
@@ -364,7 +288,7 @@ void ProcessCanCMD(void)
 		
 				}									
 			}
-			SendCanResp(CMD3_CHUNK_END, CmdExcuStatus);
+			SendCanResp(module->address, CMD3_CHUNK_END, CmdExcuStatus);
 		break;
 		
 		case CMD4_GET_VERSION:
@@ -374,8 +298,7 @@ void ProcessCanCMD(void)
 			AnswerStr[2] = 'K';
 			AnswerStr[3] = 'B';  /*接下去要更新Bootload*/
 			AnswerStr[4] = '\0';				
-			
-//			CANSendStringExt((char *)AnswerStr, (ModuleAdress | ((u16)CMD4_GET_VERSION<<8)));
+			CANSendStringExt((char *)AnswerStr, (module->address | ((u16)CMD4_GET_VERSION<<8)));
 		break;
 		
 		case CMD5_COMPLETE:
@@ -388,8 +311,7 @@ void ProcessCanCMD(void)
 					BOOTFlag.Bit.UpdateComplete = 1;
 				}			
 			}
-			
-			SendCanResp(CMD5_COMPLETE, CmdExcuStatus);
+			SendCanResp(module->address, CMD5_COMPLETE, CmdExcuStatus);
 			FLASH_Lock();
 
 			__disable_fault_irq();  
@@ -476,37 +398,25 @@ int BootLoad_ServerInIrq(CanRxMsg* RxMsg, int deviceId)
 }
 
 /**
-  * @brief  
+  * @brief  Update App
   * @param  
   * @retval res
   */
 int QA_Process(AIAMODULE *module) /* "BOOTLOAD" */
 {	
-	char AnswerStr[20];
 	int bootcode;
-	int readboot;
-	int ModuleAdress;
 		
 	CHECK_PARAM_NUMBER(1);
 	
-	ModuleAdress = module->address;
-	bootcode = ((ModuleAdress<<24)| (ModuleAdress<<16)| (ModuleAdress<<8)| ModuleAdress);
+	bootcode = ((module->address<<24) | (module->address<<16) | (module->address<<8) | module->address);
 	
-	//readboot <<= 16;
-	//readboot |= atou16((char *)&module->recvParams[4],16);
-	readboot = atou16((char *)&module->recvParams[0],16);
-
-	if(bootcode == readboot)	
+	if(bootcode == module->recvParams[0])	
 	{
-		/*正确的指令，可以开始烧写*/
-		if(WriteBootCodeIntoFlash(ModuleAdress))
+		if(WriteBootCodeIntoFlash(module->address))
 		{				
-//			PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
-//			SendModuleResponse(module);
-
-			sprintf(AnswerStr,"&%cOK\r",module->addressChar);
-			CANSendStringStd(AnswerStr, ModuleAdress);	
-	
+			PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+			SendModuleResponse(module);
+			
 			/* reset*/
 			__disable_fault_irq();  
 			NVIC_SystemReset();	
@@ -514,36 +424,33 @@ int QA_Process(AIAMODULE *module) /* "BOOTLOAD" */
 			return RESPONSE_IN_PROCESS;
 		}
 	}
-	return FAIL;
+	return ERR_PARAM;
 }
+
+
+
+
 /**
-  * @brief  
+  * @brief  Update Bootload.
   * @param  
   * @retval res
   */
 int QB_Process(AIAMODULE *module) /* "UPDATEBT" */
 {
-	char AnswerStr[20];
 	int bootcode;
-	int ModuleAdress;
 	
 	CHECK_PARAM_NUMBER(1);
 
-	ModuleAdress = module->address;
-	bootcode = ((ModuleAdress<<24)| (ModuleAdress<<16)| (ModuleAdress<<8)| ModuleAdress);
+	bootcode = ((module->address<<24) | (module->address<<16) | (module->address<<8) | module->address);
 	BOOTFlag.Allbits = 0x0000;
 	
-		
-	//if(bootcode == ((atou16((char *)&module->recvParams[0],16) << 16) | (atou16((char *)&module->recvParams[4],16))))
-	if(bootcode == atou16((char *)&module->recvParams[0],16))
+	if(bootcode == module->recvParams[0])
 	{
-//		PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
-//		SendModuleResponse(module);
+		PrepareResponseBuf(module, "%d", EXECUTE_SUCCESS);
+		SendModuleResponse(module);
 		
-		sprintf(AnswerStr,"&%cOK\r",module->addressChar);
-		CANSendStringStd(AnswerStr, ModuleAdress);		
+		Bootload_CanInit(module->address);
 		
-		Bootload_CanInit(ModuleAdress);
 		BOOTFlag.Bit.EnterUpdateMode = 1;
 		
 		ChunkSumXor = 0;
@@ -555,23 +462,15 @@ int QB_Process(AIAMODULE *module) /* "UPDATEBT" */
 		{
 			if(BOOTFlag.Bit.CanNewFrame)
 			{
-				ProcessCanCMD();
+				ProcessCanCMD(module);
 				BOOTFlag.Bit.CanNewFrame = 0;	
 			}		
 		}		
 	}
-	return FAIL;
+	return ERR_PARAM;
 }
-/**
-  * @brief  
-  * @param  
-  * @retval res
-  */
-int QC_Process(AIAMODULE *module) /* "ES" */
-{
-	PrepareResponseBuf(module, "%08X", EXECUTE_SUCCESS);
-	return PREPARE_IN_PROCESS;
-}
+
+
 
 int BOOT_CmdProcess(AIAMODULE *module, int cmdword)
 {
@@ -581,7 +480,6 @@ int BOOT_CmdProcess(AIAMODULE *module, int cmdword)
 	{
 		CASE_REGISTER_CMD_PROCESS(QA);	/* "BOOTLOAD" */
 		CASE_REGISTER_CMD_PROCESS(QB);	/* "UPDATEBT" */
-		CASE_REGISTER_CMD_PROCESS(QC);	/* "ES" */
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		

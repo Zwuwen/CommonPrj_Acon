@@ -158,16 +158,11 @@ extern u16 CurrentSeq;
 extern u32 DecryptKey;
 /* Exported functions ------------------------------------------------------------*/
 void CAN_BOOT_JumpToApplication(u32 Addr);
-void ProcessCanCMD(void);
-void SendCanResp(CMDTYPE Cmd, u8 Status);
-void BTLED_GPIO_Config(void);
-int Bootload_Func(char *CmdStr, char *CmdBuf);
+void SendCanResp(int addr, CMDTYPE Cmd, u8 Status);
 void Bootload_Init(int deviceId);
 int BootLoad_ServerInIrq(CanRxMsg* RxMsg, int deviceId);
-/* Used by aia_bootload.c---------------------------------------------------------*/
-extern u8 ModuleAdress;
-extern char ModuleAdressChar;
-u16 atoi16(char *p, char radix);
+
+
 
 
 
