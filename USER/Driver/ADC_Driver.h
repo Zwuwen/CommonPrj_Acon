@@ -1,10 +1,15 @@
-/********************************************************************************
-  * @file    ADC_Driver.c 
-  * @author  AIA Team
-  * @version V1.1
+/**
+  ******************************************************************************
+  * @file    ADC_Driver.h
+  * @author  Bangju.Jin
+  * @version V1.0
   * @created    19-April-2019
-  * @lastModify 
-  * @brief   ADC Driver:  
+  * @lastModified 19-April-2019
+  * @brief   ADC Driver
+  ******************************************************************************
+  * @attention
+  * See TODO
+  * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
   ******************************************************************************/
 #ifndef __ADC_DRIVER_H
 #define	__ADC_DRIVER_H

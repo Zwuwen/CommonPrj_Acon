@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    PWM_Driver.c
-  * @author  AIA Team
+  * @author  Xiufeng.Zhu
   * @version V1.0
   * @created    15-April-2019
   * @lastModified 15-April-2019
@@ -11,8 +11,6 @@
   * 
   * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
   ******************************************************************************/
-
-
 #include "PWM_Driver.h"
 
 /**
@@ -186,6 +184,10 @@ u8 PWM_Ch3DutyChange(u16 Duty_Ratio)
   	TIM2->CCR3 = TIM_Pulse;	 
 	return 0;
 }
+
+//PWM_DutyChange £¨TIM, Channel Ratio Duty£©
+//PWM_TIM2CHDutyChange(21334) PWM_DutyChange£¨TIM2, 
+//PWM_TIM2CH1DutyChange £¨Duty£©  PWM_TIM2CHDutyChange
 
 /**
   * @brief  change ch4 duty circle .

@@ -1,20 +1,24 @@
-/*
+/**
+  ******************************************************************************
   * @file    ADC_Driver.c 
-  * @author  AIA Team
-  * @version V1.1
-  * @created    18-April-2019
-  * @lastModify 
-  * @brief   ADC Driver:  
-*/
-//请在ADC_Driver.h中选择ADC通道数量和布尔值
+  * @author  Bangju.Jin
+  * @version V1.0
+  * @created    19-April-2019
+  * @lastModified 19-April-2019
+  * @brief   ADC Driver
+  ******************************************************************************
+  * @attention
+  * See TODO
+  * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
+  ******************************************************************************/
 #include "ADC_Driver.h"
-
 
 __IO uint16_t ADC_ConvertedValue[Sample_Num][Channel_Num];
 u16 ADC_Value[Channel_Num];
 
+
 /**
-  * @brief  初始化ADC引脚
+  * @brief  Initialize  ADC GPIO
   * @param  None
   * @retval None
   */

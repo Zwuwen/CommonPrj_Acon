@@ -9,6 +9,7 @@
 
 int ReadingTemp[TOTAL_PID_NUMBER];
 int SetPointTemp[TOTAL_PID_NUMBER];
+
 //TODO :读取温度， 设置温度， 读取偏移量 设置偏移量
 //  偏移量 = 设置值- 实测值     比如 设置37度，如果测得反应盘温度 36度 则 偏移量 = 37-36  = 1 度
 
@@ -117,11 +118,14 @@ int QD_Process(AIAMODULE *module)/*set offset*/
 
 	return PASS;	
 }
+
+
+
+
 int TemperatureTask_CmdProcess(AIAMODULE *module, int cmdword)
 {
 	int ret;
 	
-	/*Reserved Cmd*/
 	switch(cmdword)
 	{
 		CASE_REGISTER_CMD_PROCESS(QA);	/*read temperature*/

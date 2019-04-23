@@ -1,5 +1,17 @@
-
-/* Define to prevent recursive inclusion -------------------------------------*/
+/**
+  ******************************************************************************
+  * @file    AD7708_SPI.h
+  * @author  Xiufeng.Zhu
+  * @version V1.0
+  * @created    20-April-2019
+  * @lastModified 20-April-2019
+  * @brief   IC AD7708  via SPI   8 ADC value
+  ******************************************************************************
+  * @attention
+  *
+  * 
+  * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
+  ******************************************************************************/
 #ifndef __AD7708_SPI_H
 #define __AD7708_SPI_H
 

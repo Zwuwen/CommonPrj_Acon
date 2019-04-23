@@ -1,14 +1,16 @@
-/*
+/**
+  ******************************************************************************
   * @file    DAC_Driver.c 
-  * @author  AIA Team
-  * @version V1.1
-  * @created    18-April-2019
-  * @lastModify 
-  * @brief   DAC Driver:  
-*/
-
-
-//请在DAC_Driver.h中选择DAC通道数量和布尔值
+  * @author  Bangju.Jin
+  * @version V1.0
+  * @created    19-April-2019
+  * @lastModified 19-April-2019
+  * @brief   DAC Driver
+  ******************************************************************************
+  * @attention
+  * 
+  * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
+  ******************************************************************************/
 #include "DAC_Driver.h"
 
 /**

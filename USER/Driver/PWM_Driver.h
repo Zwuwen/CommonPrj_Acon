@@ -1,10 +1,10 @@
 /********************************************************************************
-  * @file    ADC_Driver.h 
-  * @author  AIA Team
-  * @version V1.1
+  * @file    PWM_Driver.h
+  * @author  Xiufeng.Zhu
+  * @version V1.0
   * @created    19-April-2019
   * @lastModify 
-  * @brief   ADC Driver:  
+  * @brief   PWM Driver:  
   ******************************************************************************/
 
 #ifndef __PWM_DRIVER_H

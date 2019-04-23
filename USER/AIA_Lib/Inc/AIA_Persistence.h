@@ -25,6 +25,8 @@
 typedef	struct _PERSISTENCE_PARAM
 {
 	char moduleId;
+	char dummy[3];
+	
 	u32 OffSet[4];
 	int TargetValue[4];
 	_LVPIDPARAM PID[4];

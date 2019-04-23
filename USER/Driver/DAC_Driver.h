@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
   * @file    DAC_Driver.c 
-  * @author  AIA Team
-  * @version V1.1
-  * @created    18-April-2019
-  * @lastModify 
-  * @brief   ADC Driver:  
+  * @author  Bangju.Jin
+  * @version V1.0
+  * @created    19-April-2019
+  * @lastModified 19-April-2019
+  * @brief   DAC Driver
   ******************************************************************************
   * @attention
-  *
+  * 
   * <h2><center>&copy; COPYRIGHT 2015 ACONBIO</center></h2>
   ******************************************************************************/
 #ifndef __DAC_DRIVER_H
@@ -23,8 +23,6 @@
 //开启两个通道，API调用SET_CHN1_DAC()、SET_CHN2_DAC();
 #define DAC_CHN1_ENABLE 1
 #define DAC_CHN2_ENABLE 1
-
-
 
 
 

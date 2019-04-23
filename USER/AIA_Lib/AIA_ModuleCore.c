@@ -70,7 +70,6 @@ void ModuleCore_Init(CmdProcess_T userDefineFunc)
 {
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
-	//ModuleCore.address = 0x01;PersistenceParams
 	ModuleCore.address = PersistenceParams.moduleId;
 	ModuleCore.addressChar = IdChar[ModuleCore.address];
 	ModuleCore.normalRecvSignature = ModuleCore.address | 0x80;
@@ -186,6 +185,7 @@ int SV_Process(AIAMODULE *module)
 		memcpy(&PersistenceParams.PID[i], &LVPID[i], sizeof(LVPID[i]));
 	}
 
+	//TODO PerparePersistenceData
 	return PLL_SaveParams((char*)&PersistenceParams,sizeof(PersistenceParams));
 }
 /**
