@@ -31,7 +31,7 @@
 
 
 #define EEROM_ADDR_START_MOTOR 4
-#define EEROM_ADDR_END_MOTOR 256
+#define EEROM_ADDR_END_MOTOR 512
 
 #define AT24C128		1
 #define AT24C256		2

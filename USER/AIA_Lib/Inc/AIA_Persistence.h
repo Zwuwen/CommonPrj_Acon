@@ -16,6 +16,7 @@
 #define	__AIA_PERSISTENCE_H
 
 #include "AIA_Utilities.h"
+#include "AIA_PID.h"
 
 
 /** 
@@ -23,8 +24,10 @@
   */ 
 typedef	struct _PERSISTENCE_PARAM
 {
-	char moduleId[5*1024];
-
+	char moduleId;
+	u32 OffSet[4];
+	int TargetValue[4];
+	_LVPIDPARAM PID[4];
 }PERSISTENCE_PARAM;
 
 extern PERSISTENCE_PARAM PersistenceParams;
@@ -33,6 +36,7 @@ extern PERSISTENCE_PARAM PersistenceParams;
 /* Exported functions ------------------------------------------------------------*/
 BOOL PLL_SaveParams(char *pbuf, int length);
 BOOL PLL_ReadParams(char *pbuf, int length);
+void PersistencDataInit(void);
 
 
 #endif

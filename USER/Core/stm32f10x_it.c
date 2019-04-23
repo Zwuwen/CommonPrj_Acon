@@ -136,9 +136,15 @@ void PendSV_Handler(void)
   */
 void ModuleCore_Server_InSysTickIrq(void);
 void SysTick_Handler(void)
-{
+{	
 	/*1ms*/
-	ModuleCore_Server_InSysTickIrq();
+	static int Count10ms = 0;
+	
+	if(Count10ms++ >= 10)
+	{
+		Count10ms = 0;
+		ModuleCore_Server_InSysTickIrq();
+	}
 }
 
 /******************************************************************************/

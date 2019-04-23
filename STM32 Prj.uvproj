@@ -10,7 +10,7 @@
       <TargetName>CommonPrj</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <uAC6>0</uAC6>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F103RC</Device>
@@ -148,7 +148,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>4</TargetSelection>
+          <TargetSelection>3</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -362,7 +362,6 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>0</uC99>
-            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -375,7 +374,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER, STM32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Libraries\STM32F10x_StdPeriph_Driver\inc;.\Libraries\CMSIS\CM3\CoreSupport;.\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x;.\USER\AIA_Lib\Inc;.\USER\Driver;.\USER\Core;.\USER\Task</IncludePath>
+              <IncludePath>.\Libraries\STM32F10x_StdPeriph_Driver\inc;.\Libraries\CMSIS\CM3\CoreSupport;.\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x;.\USER\AIA_Lib\Inc;.\USER\Peripheral;.\USER\Driver;.\USER\Core;.\USER\Task</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -475,11 +474,6 @@
               <FilePath>.\USER\Driver\ADC_Driver.c</FilePath>
             </File>
             <File>
-              <FileName>Flash_Driver.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\USER\Driver\Flash_Driver.c</FilePath>
-            </File>
-            <File>
               <FileName>GPIO_Driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\USER\Driver\GPIO_Driver.c</FilePath>
@@ -488,6 +482,16 @@
               <FileName>DAC_Driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\USER\Driver\DAC_Driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>Flash_Driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\Driver\Flash_Driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>PWM_Driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\Driver\PWM_Driver.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -603,6 +607,11 @@
               <FileName>stm32f10x_dac.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_dac.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -22,18 +22,18 @@ static void DAC_GPIO_Config(void)
 	//打开GPIOA时钟和DAC时钟
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
-	#if DAC_CHN1_ENABLE
+#if DAC_CHN1_ENABLE
 	GPIO_InitStructure.GPIO_Pin = DAC_OUT_PIN1;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(DAC_OUT_GPIO, &GPIO_InitStructure);	
-	#endif 
-	#if DAC_CHN2_ENABLE
+#endif 
+#if DAC_CHN2_ENABLE
 	GPIO_InitStructure.GPIO_Pin = DAC_OUT_PIN2;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(DAC_OUT_GPIO, &GPIO_InitStructure);	
-	#endif 
+#endif 
 }
 
 /**

@@ -19,8 +19,6 @@
 
 PERSISTENCE_PARAM PersistenceParams;
 
-//PLL_SaveParams(&PersistenceParams, sizeof(PERSISTENCE_PARAM));
-
 BOOL PLL_SaveParams(char *pbuf, int length)
 {
 #ifndef PARAM_SOURCE
@@ -62,26 +60,20 @@ BOOL PLL_ReadParams(char *pbuf, int length)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void PersistencDataInit(void)
+{
+	int i;
+	
+	for(i=0;i<TOTAL_PID_NUMBER;++i)
+	{
+		PersistenceParams.PID[i].flag.Bit.enablePIDTask = 0;  
+	}
+	
+	PersistenceParams.PID[i].Kp = 100;
+	PersistenceParams.PID[i].Ti = 0;
+	PersistenceParams.PID[i].Td = 0;
+	PersistenceParams.PID[i].dt = 1;
+	
+	PersistenceParams.moduleId = 0x1b;
+}
 

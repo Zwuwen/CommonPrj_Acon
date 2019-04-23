@@ -73,10 +73,6 @@ typedef	struct _AIAMODULE
 	
 	FRAMEFORMAT *recvFrame;
 	
-//	int (*BoardCastProcess)(struct _AIAMODULE *module, int cmdword);
-//	int (*NormalProcess)(struct _AIAMODULE *module, int cmdword);
-//	int (*UserDefineProcess)(struct _AIAMODULE *module, int cmdword);
-	
 	CmdProcess_T NormalProcess;
 	CmdProcess_T BoardCastProcess;
 	CmdProcess_T UserDefineProcess;

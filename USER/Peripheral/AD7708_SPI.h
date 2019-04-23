@@ -3,6 +3,8 @@
 #ifndef __AD7708_SPI_H
 #define __AD7708_SPI_H
 
+#include "stm32f10x.h"
+
 /* Includes ------------------------------------------------------------------*/
 
 
@@ -206,6 +208,7 @@ typedef struct
 
 /* Exported variables ------------------------------------------------------- */
 
+extern ADC_Channel_t g_aAdcChannel[10];
 extern REG_ADC_Control_T    g_tAdcconReg;
 
 /* Exported functions ------------------------------------------------------- */

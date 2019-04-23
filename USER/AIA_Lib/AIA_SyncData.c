@@ -45,6 +45,7 @@ void SyncData_Init(void)
 {
 	char tmpbuf[20];
 	char *p;
+	
 	SyncData.uploadPeriod = DEFAULT_SYNCDATA_UPLOAD_PERIOD;
 	SyncData.periodCount_Total = SyncData.uploadPeriod / UPDATE_SYNCDATAFLAG_IRQ_MS;
 	SyncData.periodCount_i = 0;
@@ -53,6 +54,7 @@ void SyncData_Init(void)
 	strcpy(tmpbuf, SYNCDATA_FORMAT);
 	p = tmpbuf;
 	SyncData.validByteNumber = 0;
+	
 	while(*p != NULL)
 	{
 		SyncData.validByteNumber += *p++ -'0';

@@ -18,7 +18,7 @@
 #include "stm32f10x.h"
 
 /*Exported Config*/
-#define PARAM_SOURCE 			FLASH_3
+#define PARAM_SOURCE 			I2C_1
 #define ENABLE_AIA_SYNC			1
 #define ENABLE_AIA_BOOTLOAD 	1
 #define ENABLE_AIA_PID 			1
@@ -51,8 +51,10 @@
   */ 
 typedef enum  
 {
-	FALSE = 0, 
-	TRUE
+//	FALSE = 0, 
+//	TRUE
+	TRUE = 0, 
+	FALSE
 }BOOL;
 
 

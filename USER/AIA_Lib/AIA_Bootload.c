@@ -480,7 +480,7 @@ int BootLoad_ServerInIrq(CanRxMsg* RxMsg, int deviceId)
   * @param  
   * @retval res
   */
-int QA_Process(AIAMODULE *module) /* "BOOTLOAD" */
+int YK_Process(AIAMODULE *module) /* "BOOTLOAD" */
 {	
 	char AnswerStr[20];
 	int bootcode;
@@ -521,7 +521,7 @@ int QA_Process(AIAMODULE *module) /* "BOOTLOAD" */
   * @param  
   * @retval res
   */
-int QB_Process(AIAMODULE *module) /* "UPDATEBT" */
+int YM_Process(AIAMODULE *module) /* "UPDATEBT" */
 {
 	char AnswerStr[20];
 	int bootcode;
@@ -567,7 +567,7 @@ int QB_Process(AIAMODULE *module) /* "UPDATEBT" */
   * @param  
   * @retval res
   */
-int QC_Process(AIAMODULE *module) /* "ES" */
+int YN_Process(AIAMODULE *module) /* "ES" */
 {
 	PrepareResponseBuf(module, "%08X", EXECUTE_SUCCESS);
 	return PREPARE_IN_PROCESS;
@@ -579,9 +579,9 @@ int BOOT_CmdProcess(AIAMODULE *module, int cmdword)
 	
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(QA);	/* "BOOTLOAD" */
-		CASE_REGISTER_CMD_PROCESS(QB);	/* "UPDATEBT" */
-		CASE_REGISTER_CMD_PROCESS(QC);	/* "ES" */
+		CASE_REGISTER_CMD_PROCESS(YK);	/* "BOOTLOAD" */
+		CASE_REGISTER_CMD_PROCESS(YM);	/* "UPDATEBT" */
+		CASE_REGISTER_CMD_PROCESS(YN);	/* "ES" */
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
