@@ -26,13 +26,68 @@
 #include "AIA_ErrorCode.h"
 #include "AIA_Protocol2.0.h"
 #include "CAN_Driver.h"
+#include "PWM_Driver.h"
+#include "TemperatureTask.h"
+#include "AIA_Persistence.h"
 
 #include "stdio.h"
 #include "string.h"
 
-#define TOCHAR(A) #A
-
 _LVPIDPARAM LVPID[TOTAL_PID_NUMBER];
+
+int implement_MV_Ch1(int val)
+{
+	PWM_Ch1DutyChange(val); 
+	return val;
+}
+
+
+int implement_MV_Ch2(int val)
+{
+	PWM_Ch2DutyChange(val); 
+	return val;
+}
+
+int implement_MV_Ch3(int val)
+{
+	PWM_Ch3DutyChange(val); 
+	return val;
+}
+
+int implement_MV_Ch4(int val)
+{
+	PWM_Ch4DutyChange(val); 
+	return val;
+}
+
+void LVPID_Variable_Init(void)
+{
+	int i;
+	
+	for(i=0;i<TOTAL_PID_NUMBER;i++)
+	{
+		memcpy(&LVPID[i], &PersistenceParams.PID[i], sizeof(LVPID[0]));
+
+		LVPID[i].pSV = &SetPointTemp[i];
+		LVPID[i].pPV = &ReadingTemp[i];	
+
+		LVPID_SetGainAndDt(&LVPID[i], LVPID[i].Kp , LVPID[i].Ti ,LVPID[i].Td , LVPID[i].dt);	
+		
+		if(LVPID[i].flag.Bit.enablePIDTask == 1)
+		{
+			LVPID_Init_or_Reset(&LVPID[i]);
+			LVPID[i].flag.Bit.enablePIDTask = 1;
+			LVPID[i].flag.Bit.regulationOnce = 1; /*Regulate immediately*/
+			LVPID[i].Count_dt = 0;
+		}
+		SetPointTemp[i] = PersistenceParams.TargetValue[i];
+	}
+	
+	LVPID[0].implementMV = implement_MV_Ch1;
+	LVPID[1].implementMV = implement_MV_Ch2;
+	LVPID[2].implementMV = implement_MV_Ch3;
+	LVPID[3].implementMV = implement_MV_Ch4;	
+}
 
 /**
   * @brief  Derivative Control		kd
@@ -281,25 +336,58 @@ int pid_Control(_LVPIDPARAM *lvpid)
 
 
 
+///**
+//  * @brief  NI LabVIEW :    NI_PID_pid.lvlib:PID.vi
+//  * @param  *lvpid   LVPID struct point
+//  * @retval real output
+//  */
+//int LVPID_PID_Control(_LVPIDPARAM *lvpid, u32 PidNum)
+//{	
+//	int i;
+//	int output;
+//	
+//	for(i=0;i<PidNum;i++)
+//	{
+//	
+//	if(!lvpid->flag.Bit.enablePIDTask)
+//		return lvpid->MV_Last;
+//	if(!lvpid->flag.Bit.regulationOnce)
+//		return lvpid->MV_Last;	
+//	
+//	lvpid->flag.Bit.regulationOnce = 0;
+//	
+//  	pid_Control(lvpid);
+//	InRangeAndCoerce(lvpid->MV, MVRangeH, MVRangeL);	
+//	output = lvpid->MV; 
+//	return lvpid->implementMV(output);
+//}
 /**
   * @brief  NI LabVIEW :    NI_PID_pid.lvlib:PID.vi
   * @param  *lvpid   LVPID struct point
   * @retval real output
   */
-int LVPID_PID_Control(_LVPIDPARAM *lvpid)
-{
+int LVPID_PID_Control(u32 PidNum)
+{	
+	int i;
 	int output;
-	if(!lvpid->flag.Bit.enablePIDTask)
-		return lvpid->MV_Last;
-	if(!lvpid->flag.Bit.regulationOnce)
-		return lvpid->MV_Last;	
+	_LVPIDPARAM *lvpid;
 	
-	lvpid->flag.Bit.regulationOnce = 0;
-	
-  	pid_Control(lvpid);
-	InRangeAndCoerce(lvpid->MV, MVRangeH, MVRangeL);	
-	output = lvpid->MV; 
-	return lvpid->implementMV(output);
+	for(i=0;i<PidNum;i++)
+	{
+		lvpid = &LVPID[i];		
+		if(!lvpid->flag.Bit.enablePIDTask)
+			return lvpid->MV_Last;
+		if(!lvpid->flag.Bit.regulationOnce)
+			return lvpid->MV_Last;	
+		
+		lvpid->flag.Bit.regulationOnce = 0;
+		
+		pid_Control(lvpid);
+		InRangeAndCoerce(lvpid->MV, MVRangeH, MVRangeL);	
+		output = lvpid->MV; 
+		lvpid->implementMV(output);
+	}
+	return PASS;
 }
 
 /**
@@ -307,9 +395,9 @@ int LVPID_PID_Control(_LVPIDPARAM *lvpid)
   * @param  
   * @retval res
   */
-int PA_Process(AIAMODULE *module) /* "PID_STOP"*/
+int YA_Process(AIAMODULE *module) /* "PID_STOP"*/
 {	
-	CHECK_RANGE_PARAM_1(0,3);
+	CHECK_RANGE_PARAM_1(0,TOTAL_PID_NUMBER-1);
 	
 	LVPID[module->recvParams[0]].flag.Bit.enablePIDTask = 0;
 	LVPID[module->recvParams[0]].implementMV(0);		
@@ -323,9 +411,9 @@ int PA_Process(AIAMODULE *module) /* "PID_STOP"*/
   * @param  
   * @retval res
   */
-int PB_Process(AIAMODULE *module) /* "PID_START" */
+int YB_Process(AIAMODULE *module) /* "PID_START" */
 {	
-	CHECK_RANGE_PARAM_1(0,3);
+	CHECK_RANGE_PARAM_1(0,TOTAL_PID_NUMBER-1);
 	
 	LVPID_Init_or_Reset(&LVPID[module->recvParams[0]]);
 	LVPID[module->recvParams[0]].flag.Bit.enablePIDTask = 1;
@@ -338,10 +426,10 @@ int PB_Process(AIAMODULE *module) /* "PID_START" */
   * @param  
   * @retval res
   */
-int PC_Process(AIAMODULE *module) /* SETPID */
+int YC_Process(AIAMODULE *module) /* SETPID */
 {
 	CHECK_PARAM_NUMBER(5);
-	CHECK_RANGE_PARAM_1(0,3);
+	CHECK_RANGE_PARAM_1(0,TOTAL_PID_NUMBER-1);
 	
 	LVPID_SetGainAndDt(&LVPID[module->recvParams[0]], module->recvParams[1], module->recvParams[2], module->recvParams[3], module->recvParams[4]);	
 
@@ -352,9 +440,9 @@ int PC_Process(AIAMODULE *module) /* SETPID */
   * @param  
   * @retval res
   */
-int PD_Process(AIAMODULE *module) /* "GETPID" */
+int YD_Process(AIAMODULE *module) /* "GETPID" */
 {	
-	CHECK_RANGE_PARAM_1(0,3);
+	CHECK_RANGE_PARAM_1(0,TOTAL_PID_NUMBER-1);
 	
 	PrepareResponseBuf(module, "%d %d %d %d %d %d %d %c", EXECUTE_SUCCESS, 
 		LVPID[module->recvParams[0]].Kp, LVPID[module->recvParams[0]].Ti, LVPID[module->recvParams[0]].Td, 
@@ -367,9 +455,9 @@ int PD_Process(AIAMODULE *module) /* "GETPID" */
   * @param  
   * @retval res
   */
-int PE_Process(AIAMODULE *module) /* "SETMV" */
+int YE_Process(AIAMODULE *module) /* "SETMV" */
 {
-	CHECK_RANGE_PARAM_1(0,3);
+	CHECK_RANGE_PARAM_1(0,TOTAL_PID_NUMBER-1);
 
 	LVPID[module->recvParams[0]].implementMV(module->recvParams[1]);
 
@@ -382,11 +470,11 @@ int PID_CmdProcess(AIAMODULE *module, int cmdword)
 	
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(PA);	/* PID_STOP */
-		CASE_REGISTER_CMD_PROCESS(PB);	/* PID_START */
-		CASE_REGISTER_CMD_PROCESS(PC);	/* SETPID */
-		CASE_REGISTER_CMD_PROCESS(PD);	/* "GETPID" */
-		CASE_REGISTER_CMD_PROCESS(PE);	/* "SETMV" */
+		CASE_REGISTER_CMD_PROCESS(YA);	/* PID_STOP */
+		CASE_REGISTER_CMD_PROCESS(YB);	/* PID_START */
+		CASE_REGISTER_CMD_PROCESS(YC);	/* SETPID */
+		CASE_REGISTER_CMD_PROCESS(YD);	/* "GETPID" */
+		CASE_REGISTER_CMD_PROCESS(YE);	/* "SETMV" */
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		

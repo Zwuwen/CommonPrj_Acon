@@ -402,7 +402,7 @@ int BootLoad_ServerInIrq(CanRxMsg* RxMsg, int deviceId)
   * @param  
   * @retval res
   */
-int QA_Process(AIAMODULE *module) /* "BOOTLOAD" */
+int YK_Process(AIAMODULE *module) /* "BOOTLOAD" */
 {	
 	int bootcode;
 		
@@ -435,7 +435,7 @@ int QA_Process(AIAMODULE *module) /* "BOOTLOAD" */
   * @param  
   * @retval res
   */
-int QB_Process(AIAMODULE *module) /* "UPDATEBT" */
+int YM_Process(AIAMODULE *module) /* "UPDATEBT" */
 {
 	int bootcode;
 	

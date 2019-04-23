@@ -1,4 +1,6 @@
 #include "AD7708_SPI.h"
+#include <string.h>
+#include <math.h>
 
 
 
@@ -27,8 +29,8 @@ ADC_Channel_t g_aAdcChannel[10]={
 		P_AIN9_N_AINCOM,P_AIN10_N_AINCOM
 };
 
-uint8_t g_IsLongData[16] = {0,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0};/* 16bit or 8bit of regiser  */
-uint8_t g_Gain[8]= {128,84,32,16,8,4,2,1};	/* gain */
+u8 g_IsLongData[16] = {0,0,0,0,1,1,1,0,0,0,0,0,1,1,0,0};/* 16bit or 8bit of regiser  */
+u8 g_Gain[8]= {128,84,32,16,8,4,2,1};	/* gain */
 double g_ValTest[10];
 u8 g_ucLastChannel = 16;/* save last ad7708 channel */
 
@@ -298,8 +300,6 @@ float CalTemperature(float _fRt)
 	
 	return fTemp;
 }
-
-
 /**
   * @brief  read adc voltage  .
   * @param  None
@@ -363,7 +363,6 @@ float ReadChannleTemperature(u8 _ucAdcChannel)
 	}
 	return 1;
 }
-
 /**
   * @brief  self calibration  .
   * @param  None
@@ -450,21 +449,6 @@ void AD7708_Config(void)
 {
 	AD7708_SPI2_Init();
 	AD7708_Init();
-}
-
-/**
-  * @brief  test for ad7708 .
-  * @param  None
-  * @retval None
-  */
-void GetTemperature(void)
-{
-	u8 i;
-
-	for(i=0;i<4;i++)
-	{
-		ReadingTemp[i] = ReadChannleTemperature(g_aAdcChannel[i]);	
-	}
 }
 
 /**

@@ -25,10 +25,14 @@
 
 #include "CAN_Driver.h"
 #include "IIC_Driver.h"
+#include "AIA_PID.h"
 #include "AIA_ModuleCore.h"
 #include "AIA_Protocol2.0.h"
 
-#include "DemoTask.h"
+#include "PWM_Driver.h"
+#include "TemperatureTask.h"
+#include "AIA_SyncData.h"
+#include "AIA_Persistence.h"
 
 
 /** @addtogroup STM32F10x_StdPeriph_Template
@@ -63,11 +67,20 @@ int main(void)
 	//////Driver Initialize///////////
 	IIC_Driver_Init();
 	CAN_Driver_Init();
+	PWM_Init();
+	
+	//////AIA_Lib Initialize///////////	
+	PersistencDataInit();
+	
+	PLL_ReadParams((char *)&PersistenceParams,sizeof(PersistenceParams));
+	LVPID_Variable_Init();
+	SyncData_Init();
+	TemperatureDataInit();
 	
 	
 	//////Module Initialize///////////	
-	ModuleCore_Init(DemoTask_CmdProcess);
-	
+	ModuleCore_Init(TemperatureTask_CmdProcess);
+		
 	//////Can Filter///////////	
 	CAN_Filter_Config(CanFilterSignature, sizeof(CanFilterSignature));//FILTER_FRAMEID_NUMBER
 	
@@ -87,20 +100,12 @@ int main(void)
   /* Infinite loop */
 	while (1)
 	{
+
+		LVPID_PID_Control(TOTAL_PID_NUMBER);
+
 		AIA_Protocol2_Handle(&ModuleCore);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -112,14 +117,14 @@ int main(void)
 void NVIC_Config(void)  
 {  
 
-   #ifdef  VECT_TAB_RAM  
+#ifdef  VECT_TAB_RAM  
 	/* Set the Vector Table base location at 0x20000000 */ 
 	NVIC_SetVectorTable(NVIC_VectTab_RAM, 0x0); 
-    #else  /* VECT_TAB_FLASH  */
+#else  /* VECT_TAB_FLASH  */
 	/* Set the Vector Table base location at 0x08000000 */ 
 	NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x2000);   
 	//NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0000);
-    #endif
+#endif
 
 	/* 1 bit for pre-emption priority, 3 bits for subpriority */
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);   

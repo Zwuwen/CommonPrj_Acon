@@ -18,6 +18,8 @@
 #include "AIA_SyncData.h"
 #include "AIA_PID.h"
 #include "string.h"
+#include "AIA_Persistence.h"
+#include "TemperatureTask.h"
 
 
 
@@ -68,7 +70,8 @@ void ModuleCore_Init(CmdProcess_T userDefineFunc)
 {
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
-	ModuleCore.address = 0x01;
+	//ModuleCore.address = 0x01;PersistenceParams
+	ModuleCore.address = PersistenceParams.moduleId;
 	ModuleCore.addressChar = IdChar[ModuleCore.address];
 	ModuleCore.normalRecvSignature = ModuleCore.address | 0x80;
 	ModuleCore.boardcastIdChar = '0';
@@ -149,9 +152,6 @@ int RV_Process(AIAMODULE *module)
 	return PREPARE_IN_PROCESS;
 }
 
-
-
-
 /**
   * @brief  
   * @param  
@@ -165,10 +165,29 @@ int SA_Process(AIAMODULE *module)
 	SendModuleResponse(module);
 
 	ModuleCore_ModifyAddress(module->recvParams[0]);
-	
+			
 	return RESPONSE_IN_PROCESS;
 }
+/**
+  * @brief  
+  * @param  
+  * @retval res
+  */
+int SV_Process(AIAMODULE *module)
+{
+	u8 i;
+	
+	CHECK_PARAM_NUMBER(0);
+	PersistenceParams.moduleId = module->address;	
 
+	for(i=0;i<TOTAL_PID_NUMBER;i++)
+	{
+		PersistenceParams.TargetValue[i] = SetPointTemp[i];
+		memcpy(&PersistenceParams.PID[i], &LVPID[i], sizeof(LVPID[i]));
+	}
+
+	return PLL_SaveParams((char*)&PersistenceParams,sizeof(PersistenceParams));
+}
 /**
   * @brief  
   * @param  
@@ -202,7 +221,7 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 		CASE_REGISTER_CMD_PROCESS(RA);	/*Read address*/
 		CASE_REGISTER_CMD_PROCESS(RV);	/*Read Version*/
 		CASE_REGISTER_CMD_PROCESS(SA);	/*Set Address*/
-		//CASE_REGISTER_CMD_PROCESS(SA);	/*Save Params*/
+		CASE_REGISTER_CMD_PROCESS(SV);	/*Save Params*/
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
