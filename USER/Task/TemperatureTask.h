@@ -2,13 +2,26 @@
 #define	__DEMOTASK_H
 
 #include "AIA_ModuleCore.h"
+#include "AIA_PID.h"
 
 #define TEMPERATURE_OFFSET 0
 
-extern int ReadingTemp[4];
-extern int SetPointTemp[4];
+
+/* Exported Types ------------------------------------------------------- */
 
 
+/** 
+  * @brief  
+  */ 
+typedef	struct _TEMPERATURE_PARAM
+{
+	int PerSisLen;
+	int SetPointTemp[TOTAL_PID_NUMBER];
+	int OffSet[TOTAL_PID_NUMBER];	
+	
+	int ReadingTemp[TOTAL_PID_NUMBER];
+	
+}_TEMPERATURE_PARAM;
 
 
 

@@ -80,7 +80,6 @@ void LVPID_Variable_Init(void)
 			LVPID[i].flag.Bit.regulationOnce = 1; /*Regulate immediately*/
 			LVPID[i].Count_dt = 0;
 		}
-		SetPointTemp[i] = PersistenceParams.TargetValue[i];
 	}
 	
 	LVPID[0].implementMV = implement_MV_Ch1;

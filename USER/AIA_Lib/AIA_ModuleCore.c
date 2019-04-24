@@ -68,6 +68,10 @@ void ModuleCore_Server_InSysTickIrq(void)
   
 void ModuleCore_Init(CmdProcess_T userDefineFunc)
 {
+	/* syncdata init */
+	SyncData_Init();
+	
+	/* core data init */
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
 	ModuleCore.address = PersistenceParams.moduleId;

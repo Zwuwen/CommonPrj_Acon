@@ -17,6 +17,7 @@
 
 #include "AIA_Utilities.h"
 #include "AIA_PID.h"
+#include "TemperatureTask.h"
 
 
 /** 
@@ -27,8 +28,9 @@ typedef	struct _PERSISTENCE_PARAM
 	char moduleId;
 	char dummy[3];
 	
-	u32 OffSet[4];
-	int TargetValue[4];
+	char temper[PSIS_LENGTH] ;
+	char pid[20];
+	
 	_LVPIDPARAM PID[4];
 }PERSISTENCE_PARAM;
 

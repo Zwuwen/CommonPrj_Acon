@@ -72,12 +72,6 @@ int main(void)
 	//////AIA_Lib Initialize///////////	
 	PersistencDataInit();
 	
-	PLL_ReadParams((char *)&PersistenceParams,sizeof(PersistenceParams));
-	LVPID_Variable_Init();
-	SyncData_Init();
-	TemperatureDataInit();
-	
-	
 	//////Module Initialize///////////	
 	ModuleCore_Init(TemperatureTask_CmdProcess);
 		
