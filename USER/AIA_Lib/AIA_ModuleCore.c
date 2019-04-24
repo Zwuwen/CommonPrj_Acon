@@ -20,7 +20,7 @@
 #include "string.h"
 #include "AIA_Persistence.h"
 #include "TemperatureTask.h"
-
+#include "AIA_Bootload.h"
 
 
 AIAMODULE ModuleCore;
@@ -68,9 +68,6 @@ void ModuleCore_Server_InSysTickIrq(void)
   
 void ModuleCore_Init(CmdProcess_T userDefineFunc)
 {
-	/* syncdata init */
-	SyncData_Init();
-	
 	/* core data init */
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
@@ -86,10 +83,19 @@ void ModuleCore_Init(CmdProcess_T userDefineFunc)
 	ModuleCore.NormalProcess = ModuleCore_NormalCmdProcess;
 	ModuleCore.UserDefineProcess = userDefineFunc;
 	
-	CanFilterSignature[0] = ModuleCore.normalRecvSignature;	
-	CanFilterSignature[1] = ModuleCore.boardcastRecvSignature;
-	
 	InitCmdFIFO(&ModuleCore.fifo);
+	
+#if ENABLE_AIA_SYNC == 1
+	SyncData_Init();	
+#endif		
+
+#if ENABLE_AIA_PID == 1
+	LVPID_Variable_Init();	
+#endif		
+		
+#if ENABLE_AIA_BOOTLOAD == 1
+	Bootload_Init(ModuleCore.address);	
+#endif 
 }
 
 
@@ -177,18 +183,9 @@ int XC_Process(AIAMODULE *module)
   */
 int XD_Process(AIAMODULE *module)
 {
-	u8 i;
 	
-	CHECK_PARAM_NUMBER(0);
-	PersistenceParams.moduleId = module->address;	
-
-	for(i=0;i<TOTAL_PID_NUMBER;i++)
-	{
-		PersistenceParams.TargetValue[i] = SetPointTemp[i];
-		memcpy(&PersistenceParams.PID[i], &LVPID[i], sizeof(LVPID[i]));
-	}
-
-	//TODO PerparePersistenceData
+	PerparePersistenceData();
+	
 	return PLL_SaveParams((char*)&PersistenceParams,sizeof(PersistenceParams));
 }
 /**

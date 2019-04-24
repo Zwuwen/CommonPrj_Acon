@@ -102,6 +102,9 @@ int implement_MV_Ch2(int val);
 int implement_MV_Ch3(int val);
 int implement_MV_Ch4(int val);
 void LVPID_Variable_Init(void);
+
+void LVPID_Param_FromPersistence(char *src);
+int PerpareToPIDArea(char *dest);
 								
 #endif 
 

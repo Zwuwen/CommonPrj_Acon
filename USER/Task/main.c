@@ -70,13 +70,15 @@ int main(void)
 	PWM_Init();
 	
 	//////AIA_Lib Initialize///////////	
-	PersistencDataInit();
+	DistributePersistencData();
 	
 	//////Module Initialize///////////	
 	ModuleCore_Init(TemperatureTask_CmdProcess);
 		
 	//////Can Filter///////////	
-	CAN_Filter_Config(CanFilterSignature, sizeof(CanFilterSignature));//FILTER_FRAMEID_NUMBER
+	CanFilterSignature[0] = ModuleCore.normalRecvSignature;	
+	CanFilterSignature[1] = ModuleCore.boardcastRecvSignature;
+	CAN_Filter_Config(CanFilterSignature, FILTER_FRAMEID_NUMBER);
 	
 
 	if (SysTick_Config(SystemCoreClock/1000)) /* 1ms */

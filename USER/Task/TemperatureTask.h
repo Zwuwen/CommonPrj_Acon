@@ -6,28 +6,17 @@
 
 #define TEMPERATURE_OFFSET 0
 
+extern int SetTemp[TOTAL_PID_NUMBER];
+extern int OffSet[TOTAL_PID_NUMBER];	
+extern int ReadingTemp[TOTAL_PID_NUMBER];
 
 /* Exported Types ------------------------------------------------------- */
 
 
-/** 
-  * @brief  
-  */ 
-typedef	struct _TEMPERATURE_PARAM
-{
-	int PerSisLen;
-	int SetPointTemp[TOTAL_PID_NUMBER];
-	int OffSet[TOTAL_PID_NUMBER];	
-	
-	int ReadingTemp[TOTAL_PID_NUMBER];
-	
-}_TEMPERATURE_PARAM;
-
-
-
 /* Exported functions ------------------------------------------------------- */
 int TemperatureTask_CmdProcess(AIAMODULE *module, int cmdword);
-void TemperatureDataInit(void);
+void TemperatureData_FromPersistence(char *src);
+int PerpareToTemperatureArea(char *dest);
 #endif
 
 

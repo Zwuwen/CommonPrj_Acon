@@ -60,15 +60,66 @@ int implement_MV_Ch4(int val)
 	return val;
 }
 
+
+
+void LVPID_Param_FromPersistence(char *src)
+{
+	int *tmp;
+	int i;
+	tmp = (int*)src;
+	if(src != NULL)
+	{
+		for(i=0; i<TOTAL_PID_NUMBER; i++)
+		{
+			LVPID[i].Kp = *tmp++;
+			LVPID[i].Ti = *tmp++;
+			LVPID[i].Td = *tmp++;
+			LVPID[i].dt = *tmp++;
+			LVPID[i].flag.Bit.enablePIDTask = *tmp++;		
+		}		
+	}
+	else
+	{
+		for(i=0; i<TOTAL_PID_NUMBER; i++)
+		{
+			LVPID[i].Kp = 100;
+			LVPID[i].Ti = 0;
+			LVPID[i].Td = 0;
+			LVPID[i].dt = 1;
+			LVPID[i].flag.Bit.enablePIDTask = 0;		
+		}			
+	}
+}
+
+
+int PerpareToPIDArea(char *dest)
+{
+	int *tmp;
+	int i;
+	tmp = (int*)dest;
+	
+	for(i=0; i<TOTAL_PID_NUMBER; i++)
+	{
+		*tmp++ = LVPID[i].Kp;
+		*tmp++ = LVPID[i].Ti;
+		*tmp++ = LVPID[i].Td;
+		*tmp++ = LVPID[i].dt;
+		*tmp++ = LVPID[i].flag.Bit.enablePIDTask;
+	}
+	
+	return 5 * 4 * TOTAL_PID_NUMBER;
+}
+
+
+
+
 void LVPID_Variable_Init(void)
 {
 	int i;
 	
 	for(i=0;i<TOTAL_PID_NUMBER;i++)
 	{
-		memcpy(&LVPID[i], &PersistenceParams.PID[i], sizeof(LVPID[0]));
-
-		LVPID[i].pSV = &SetPointTemp[i];
+		LVPID[i].pSV = &SetTemp[i];
 		LVPID[i].pPV = &ReadingTemp[i];	
 
 		LVPID_SetGainAndDt(&LVPID[i], LVPID[i].Kp , LVPID[i].Ti ,LVPID[i].Td , LVPID[i].dt);	
@@ -76,7 +127,6 @@ void LVPID_Variable_Init(void)
 		if(LVPID[i].flag.Bit.enablePIDTask == 1)
 		{
 			LVPID_Init_or_Reset(&LVPID[i]);
-			LVPID[i].flag.Bit.enablePIDTask = 1;
 			LVPID[i].flag.Bit.regulationOnce = 1; /*Regulate immediately*/
 			LVPID[i].Count_dt = 0;
 		}
@@ -87,6 +137,7 @@ void LVPID_Variable_Init(void)
 	LVPID[2].implementMV = implement_MV_Ch3;
 	LVPID[3].implementMV = implement_MV_Ch4;	
 }
+
 
 /**
   * @brief  Derivative Control		kd

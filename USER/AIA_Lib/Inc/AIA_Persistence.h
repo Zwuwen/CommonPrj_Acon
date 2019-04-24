@@ -17,8 +17,9 @@
 
 #include "AIA_Utilities.h"
 #include "AIA_PID.h"
-#include "TemperatureTask.h"
 
+#define TEMP_PERSISTENCE_LENGTH  32
+#define PID_PERSISTENCE_LENGTH  5*4*TOTAL_PID_NUMBER
 
 /** 
   * @brief  
@@ -28,10 +29,9 @@ typedef	struct _PERSISTENCE_PARAM
 	char moduleId;
 	char dummy[3];
 	
-	char temper[PSIS_LENGTH] ;
-	char pid[20];
+	char temp[TEMP_PERSISTENCE_LENGTH];
+	char pid[PID_PERSISTENCE_LENGTH];
 	
-	_LVPIDPARAM PID[4];
 }PERSISTENCE_PARAM;
 
 extern PERSISTENCE_PARAM PersistenceParams;
@@ -40,8 +40,8 @@ extern PERSISTENCE_PARAM PersistenceParams;
 /* Exported functions ------------------------------------------------------------*/
 BOOL PLL_SaveParams(char *pbuf, int length);
 BOOL PLL_ReadParams(char *pbuf, int length);
-void PersistencDataInit(void);
-
+void DistributePersistencData(void);
+void PerparePersistenceData(void);
 
 #endif
 

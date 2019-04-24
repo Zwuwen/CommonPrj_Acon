@@ -30,18 +30,8 @@
 
 #define TWOCHAR2INT(A,B) ((A-'A')*26u + (B-'A'))
 
-//#define UPCASE2INT(A,B) ((A-'A')*26u + (B-'A'))
-//#define CASE_REGISTER_CMD_PROCESS(AB,A,B) 		case UPCASE2INT(A,B):\
-//												ret = AB##_Process(module);\
-//												break
-
-//#define UPCASE2INT(A,B) ((int)(((#A)[0] - 'A')*26 + ((#B)[0] - 'A')))													
-//#define CASE_REGISTER_CMD_PROCESS(A,B) 		case UPCASE2INT(A,B):\
-//												ret = A##B##_Process(module);\
-//												break
-
 #define PARAM(i)	(module->recvParams[i]) 
-												
+											
 #define PARAM_1	(module->recvParams[1])
 #define PARAM_2	(module->recvParams[2])
 #define PARAM_3	(module->recvParams[3])	
@@ -55,8 +45,8 @@
 
 #define CHECK_PARAM_NUMBER(TOTAL)			if(module->validParams != TOTAL) return ERR_PARAM
 #define CHECK_RANGE_PARAM(INDEX, PMIN, PMAX)  	if((module->validParams < INDEX) 		|| 	\
-												   (module->recvParams[INDEX-1] < PMIN) ||	\
-												   (module->recvParams[INDEX-1] > PMAX)) return ERR_PARAM
+												   (module->recvParams[INDEX-1] < (PMIN)) ||	\
+												   (module->recvParams[INDEX-1] > (PMAX))) return ERR_PARAM
 
 #define CHECK_RANGE_PARAM_1(PMIN, PMAX) CHECK_RANGE_PARAM(1, PMIN, PMAX)
 #define CHECK_RANGE_PARAM_2(PMIN, PMAX) CHECK_RANGE_PARAM(1, PMIN, PMAX)

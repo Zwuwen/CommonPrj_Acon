@@ -23,7 +23,7 @@
 #define ENABLE_AIA_BOOTLOAD 	1
 #define ENABLE_AIA_PID 			1
 
-
+#define DEFAULT_MODULECORE_ADDRESS 1
 
 /* Exported macro ------------------------------------------------------------*/
 #define LOW  0
