@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    StepperMotor.c 
+  * @file    StepperMotorTask.c 
   * @author  Bowen.He
   * @version V1.0
   * @created    24-April-2019
@@ -24,8 +24,6 @@ int AA_Process(AIAMODULE *module)/*relmove*/
 {
 	CHECK_RANGE_PARAM_1(0, 1);
 
-
-	
 	return PREPARE_IN_PROCESS;	
 }
 
