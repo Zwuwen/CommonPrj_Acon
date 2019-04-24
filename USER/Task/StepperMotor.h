@@ -142,8 +142,11 @@ typedef struct _MOTOR
 	int EncodeErrOffset;
 	int EncodeCurrAbsPos; /*读取编码器时候，当前脉冲值*/
 	int sMicroStep; /*static*/
+	int sEncodePPR; /*static*/
 	
 	int ActionCode;
+	
+	TIM_TypeDef* EncoderTIM;
 	
 	_MOTORDIR Dir;
 	_MOTORRUNSTATE RunState;
@@ -188,6 +191,9 @@ typedef struct _MOTOR
 extern MOTOR StepperMotor[TOTAL_MOTOR_NUMBER];
 
 
+
+/* Exported functions ------------------------------------------------------- */
+void StepperMotor_Init(void);
 
 
 #endif

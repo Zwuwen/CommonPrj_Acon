@@ -33,6 +33,7 @@
 #include "TemperatureTask.h"
 #include "AIA_SyncData.h"
 #include "AIA_Persistence.h"
+#include "StepperMotor.h"
 
 
 /** @addtogroup STM32F10x_StdPeriph_Template
@@ -67,18 +68,23 @@ int main(void)
 	//////Driver Initialize///////////
 	IIC_Driver_Init();
 	CAN_Driver_Init();
-	PWM_Init();
+	//PWM_Init();
 	
-	//////AIA_Lib Initialize///////////	
+	//////AIA_Lib Initialize///////////
 	DistributePersistencData();
 	
-	//////Module Initialize///////////	
+	//////Module Initialize////////////	
 	ModuleCore_Init(TemperatureTask_CmdProcess);
-		
+	
+	////////////StepperMotor///////////
+	StepperMotor_Init();
+	
 	//////Can Filter///////////	
 	CanFilterSignature[0] = ModuleCore.normalRecvSignature;	
 	CanFilterSignature[1] = ModuleCore.boardcastRecvSignature;
 	CAN_Filter_Config(CanFilterSignature, FILTER_FRAMEID_NUMBER);
+	
+	
 	
 
 	if (SysTick_Config(SystemCoreClock/1000)) /* 1ms */
@@ -88,7 +94,6 @@ int main(void)
 	}
 	
 	
-	NVIC_Config();
 	__enable_irq();
 
 	

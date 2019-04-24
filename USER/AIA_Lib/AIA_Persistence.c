@@ -64,7 +64,6 @@ BOOL PLL_ReadParams(char *pbuf, int length)
 
 void DistributePersistencData(void)
 {
-	int i;	
 	BOOL isValid;
 
 	isValid	= PLL_ReadParams((char *)&PersistenceParams,sizeof(PersistenceParams));
@@ -108,6 +107,9 @@ void PerparePersistenceData(void)
 	PerpareToTemperatureArea(PersistenceParams.temp);
 	
 	//////////////PID/////////////////
+	PerpareToPIDArea(PersistenceParams.pid);
+
+	//////////////StepperMotor/////////////////
 	PerpareToPIDArea(PersistenceParams.pid);	
 }
 
