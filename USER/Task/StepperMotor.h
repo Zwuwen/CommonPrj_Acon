@@ -194,7 +194,7 @@ extern MOTOR StepperMotor[TOTAL_MOTOR_NUMBER];
 
 /* Exported functions ------------------------------------------------------- */
 void StepperMotor_Init(void);
-
+void StepperMotor_InMainLoop(void);
 
 #endif
   

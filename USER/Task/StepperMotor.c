@@ -69,6 +69,17 @@ void StepperMotor_Init(void)
 	StepperMotor_Initialize_All();
 }
 
+void StepperMotor_InMainLoop(void)
+{
+	int i;
+	for(i=0; i<TOTAL_MOTOR_NUMBER; i++)
+	{
+		
+	}
+}
+
+
+
 
 
 /**

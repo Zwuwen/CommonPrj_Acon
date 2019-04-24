@@ -93,18 +93,17 @@ int main(void)
 		while (1);
 	}
 	
-	
 	__enable_irq();
+	
 
-	
-	
   /* Infinite loop */
 	while (1)
 	{
-
 		LVPID_PID_Control(TOTAL_PID_NUMBER);
 
 		AIA_Protocol2_Handle(&ModuleCore);
+		
+		StepperMotor_InMainLoop();
 	}
 }
 
