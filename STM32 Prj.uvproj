@@ -435,6 +435,16 @@
               <FileType>1</FileType>
               <FilePath>.\USER\Task\TemperatureTask.c</FilePath>
             </File>
+            <File>
+              <FileName>StepperMotor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\Task\StepperMotor.c</FilePath>
+            </File>
+            <File>
+              <FileName>StepperMotorTask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\Task\StepperMotorTask.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
