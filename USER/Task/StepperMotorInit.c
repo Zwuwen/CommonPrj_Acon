@@ -15,9 +15,6 @@
 #include "StepperMotorInit.h"
 
 
-int Encoder_PPR_Local 	= ENCODER_PPR; 
-
-
 
 //////////////StepperMotor[0]///////////////////
 
@@ -163,7 +160,9 @@ void StepperMotor_0_Encoder_Init(void)
 	TIM_DeInit(TIM3);							   					//ENCODER_TIMER复位
 	TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
 	TIM_TimeBaseStructure.TIM_Prescaler = 0;  								// 无分频
-	TIM_TimeBaseStructure.TIM_Period = (4*Encoder_PPR_Local)-1; 			//计数器重载值
+	
+	TIM_TimeBaseStructure.TIM_Period = ( 4 * StepperMotor[0].sEncodePPR)-1; 			//计数器重载值
+	
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;				//向上计数模式   
 	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);	

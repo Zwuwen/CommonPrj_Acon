@@ -25,7 +25,6 @@
 #define ENCODER_PPR 	1000
 
 
-extern int Encoder_PPR_Local;
 
 
 

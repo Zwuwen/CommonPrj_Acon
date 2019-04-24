@@ -69,12 +69,19 @@ void StepperMotor_Init(void)
 	StepperMotor_Initialize_All();
 }
 
+
+void StepperMotor_StateMachine(MOTOR *m)
+{
+	
+}
+
+
 void StepperMotor_InMainLoop(void)
 {
 	int i;
 	for(i=0; i<TOTAL_MOTOR_NUMBER; i++)
 	{
-		
+		StepperMotor_StateMachine(&StepperMotor[i]);
 	}
 }
 
@@ -93,8 +100,8 @@ void ReadEncCount(MOTOR *m)
 	int c2;
 	do
 	{
-		c1 = Encoder_PPR_Local * 4 * m->EncodeCircles + m->EncoderTIM->CNT;
-		c2 = Encoder_PPR_Local * 4 * m->EncodeCircles + m->EncoderTIM->CNT;
+		c1 = m->sEncodePPR * 4 * m->EncodeCircles + m->EncoderTIM->CNT;
+		c2 = m->sEncodePPR * 4 * m->EncodeCircles + m->EncoderTIM->CNT;
 		m->EncodeCurrAbsPos = m->CurrAbsPos; /*record the abspos.*/
 	}
 	while(((c1>c2) ? c1-c2 : c2-c1) > 2000);
