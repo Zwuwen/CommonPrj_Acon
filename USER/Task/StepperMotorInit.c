@@ -251,8 +251,8 @@ void StepperMotor_0_Initialize(void)
 	StepperMotor[0].GetNegativeSensor = GetNegativeSensor_1;
 	StepperMotor[0].SetMotorDir = SetMotorDir_1;
 	StepperMotor[0].PWM_Pulse_Change = PWM_Pulse_Change_1;
-	
 	StepperMotor[0].Motor_Enable();
+	
 }
 
 
@@ -262,14 +262,6 @@ void StepperMotor_Initialize_All(void)
 	StepperMotor_0_Initialize();
 
 }
-
-
-
-
-
-
-
-
 
 
 

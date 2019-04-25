@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    StepperMotorInit.c 
+  * @file    StepperMotorInit.h
   * @author  Bowen.He
   * @version V1.0
   * @created    24-April-2019
@@ -22,10 +22,15 @@
 #define MOTOR_IN2_1		GPIO_Pin_3
 
 
-#define ENCODER_PPR 	1000
+#define ENCODER_PPR 	1024
 
 
-
+#define GET_POSITIVESENSOR_STATE(pMOTOR) (pMOTOR->flag.Bit.EnableSensorLimitP ? \
+										  pMOTOR->GetPositiveSensor() : FALSE)
+#define GET_NEGATIVESENSOR_STATE(pMOTOR) (pMOTOR->flag.Bit.EnableSensorLimitN ? \
+										  pMOTOR->GetNegativeSensor() : FALSE)
+#define GET_ZSIGNAL_STATE(pMOTOR) 		  (pMOTOR->flag.Bit.EnableSensorLimitP ? \
+										  pMOTOR->GetPositiveSensor() : FALSE)
 
 
 

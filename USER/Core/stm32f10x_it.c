@@ -25,7 +25,6 @@
 #include "stm32f10x_it.h"
 
 
-
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
   */
@@ -135,16 +134,13 @@ void PendSV_Handler(void)
   * @retval None
   */
 void ModuleCore_Server_InSysTickIrq(void);
+void StepperMotor_InIrq(void);
 void SysTick_Handler(void)
 {	
 	/*1ms*/
-	static int Count10ms = 0;
+	ModuleCore_Server_InSysTickIrq();
+	StepperMotor_InIrq();
 	
-	if(Count10ms++ >= 10)
-	{
-		Count10ms = 0;
-		ModuleCore_Server_InSysTickIrq();
-	}
 }
 
 /******************************************************************************/
@@ -180,37 +176,24 @@ void SysTick_Handler(void)
 */
 
 
-/**
-  * @brief  This function handles TIM2 interrupt request.
-  * @param  None
-  * @retval None
-  */
-void TIM2_IRQHandler(void)
-{  
-}
-
-
 
 void TIM1_IRQHandler(void)
 {
+	
 }
+
+
 
 
 
 void TIM4_IRQHandler(void)
 {
+	
 }
 
 
 
-/**
-  * @brief  This function handles TIM3 interrupt request.
-  * @param  None
-  * @retval None
-  */
-void TIM3_IRQHandler(void)
-{ 
-}
+
 
 
 

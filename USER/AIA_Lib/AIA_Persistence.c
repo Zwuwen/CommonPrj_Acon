@@ -19,6 +19,7 @@
 #include "TemperatureTask.h"
 #include "string.h"
 
+
 PERSISTENCE_PARAM PersistenceParams;
 
 BOOL PLL_SaveParams(char *pbuf, int length)
@@ -62,11 +63,16 @@ BOOL PLL_ReadParams(char *pbuf, int length)
 }
 
 
+//////////////////////////////////////////////
+void StepperMotorData_FromPersistence(char *src);
+int PerpareToStepperMotorArea(char *dest);
+
 void DistributePersistencData(void)
 {
 	BOOL isValid;
 
-	isValid	= PLL_ReadParams((char *)&PersistenceParams,sizeof(PersistenceParams));
+	//isValid	= PLL_ReadParams((char *)&PersistenceParams,sizeof(PersistenceParams));
+	isValid = FALSE;
 	
 	if(isValid == TRUE)
 	{
@@ -78,6 +84,9 @@ void DistributePersistencData(void)
 		
 		//////////////PID/////////////////
 		LVPID_Param_FromPersistence(PersistenceParams.pid);
+		
+		//////////////StepperMotor/////////////////
+		StepperMotorData_FromPersistence(PersistenceParams.pid);
 	}
 	else
 	{
@@ -89,6 +98,9 @@ void DistributePersistencData(void)
 		
 		//////////////PID/////////////////
 		LVPID_Param_FromPersistence(NULL);	
+		
+		//////////////StepperMotor////////////
+		StepperMotorData_FromPersistence(NULL);	
 	}
 }
 
@@ -110,7 +122,7 @@ void PerparePersistenceData(void)
 	PerpareToPIDArea(PersistenceParams.pid);
 
 	//////////////StepperMotor/////////////////
-	PerpareToPIDArea(PersistenceParams.pid);	
+	PerpareToStepperMotorArea(PersistenceParams.motor);	
 }
 
 

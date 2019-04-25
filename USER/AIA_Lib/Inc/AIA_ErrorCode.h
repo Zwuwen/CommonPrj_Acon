@@ -25,6 +25,14 @@
 #define 	ERR_FIFO					4
 #define 	ERR_ADDRESS					5
 #define 	ERR_SEQUENCE				6
+#define 	ERR_STOP					9
+#define 	ERR_NOORIGIN				14
+#define     ERR_OVERSOFTLIMIT			7
+#define 	ERR_LIMITSENSOR    			8
+#define 	ERR_STOP					9
+#define 	ERR_STEPLOSS				11
+#define 	ERR_DRVICERR				12
+#define 	ERR_RSTMODE					15
 
 
 

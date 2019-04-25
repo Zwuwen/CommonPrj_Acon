@@ -33,8 +33,8 @@
 #include "TemperatureTask.h"
 #include "AIA_SyncData.h"
 #include "AIA_Persistence.h"
+#include "StepperMotorTask.h"
 #include "StepperMotor.h"
-
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -74,7 +74,7 @@ int main(void)
 	DistributePersistencData();
 	
 	//////Module Initialize////////////	
-	ModuleCore_Init(TemperatureTask_CmdProcess);
+	ModuleCore_Init(StepperMotorTask_CmdProcess);
 	
 	////////////StepperMotor///////////
 	StepperMotor_Init();
@@ -103,7 +103,6 @@ int main(void)
 
 		AIA_Protocol2_Handle(&ModuleCore);
 		
-		StepperMotor_InMainLoop();
 	}
 }
 

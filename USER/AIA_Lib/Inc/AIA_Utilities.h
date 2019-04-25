@@ -18,7 +18,7 @@
 #include "stm32f10x.h"
 
 /*Exported Config*/
-#define PARAM_SOURCE 			I2C_1
+#define PARAM_SOURCE 			FLASH_3
 #define ENABLE_AIA_SYNC			1
 #define ENABLE_AIA_BOOTLOAD 	1
 #define ENABLE_AIA_PID 			1
@@ -43,7 +43,7 @@
 #define IsInRange(x, H, L) ((x<=H) && (x>=L))
 
 								
-#define DELAY_1MS(TIMEMS) ModuleCore.delayCount = TIMEMS; while(ModuleCore.delayCount != 0)
+#define DELAY_MS(TIMEMS) ModuleCore.delayCount = TIMEMS; while(ModuleCore.delayCount != 0)
 
 /* Exported typedef ------------------------------------------------------------*/
 /** 

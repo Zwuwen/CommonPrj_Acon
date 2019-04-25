@@ -13,6 +13,7 @@
   * <h2><center>&copy; COPYRIGHT 2019 ACONBIO</center></h2>
   ******************************************************************************/
 #include "StepperMotorTask.h"
+#include "StepperMotor.h"
 
 
 /**
@@ -20,15 +21,27 @@
   * @param  
   * @retval res
   */
-int AA_Process(AIAMODULE *module)/*relmove*/
+int AA_Process(AIAMODULE *module)/*RST*/
 {
-	CHECK_RANGE_PARAM_1(0, 1);
+	int ret;
+	
+	ret = MotorFindOriginBySensor(&StepperMotor[0]);
+	
+	return ret;	
+}
 
-	return PREPARE_IN_PROCESS;	
+int AB_Process(AIAMODULE *module)/*ABSMOVE*/
+{
+	
+	return 0;	
 }
 
 
-
+int AC_Process(AIAMODULE *module)/*RELMOVE*/
+{
+	
+	return 0;	
+}
 
 
 
@@ -41,8 +54,9 @@ int StepperMotorTask_CmdProcess(AIAMODULE *module, int cmdword)
 	
 	switch(cmdword)
 	{
-		CASE_REGISTER_CMD_PROCESS(AA);	/*read temperature*/
-
+		CASE_REGISTER_CMD_PROCESS(AA);	/*RST*/
+		CASE_REGISTER_CMD_PROCESS(AB);	/*ABSMOVE*/
+		CASE_REGISTER_CMD_PROCESS(AC);	/*RELMOVE*/
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		

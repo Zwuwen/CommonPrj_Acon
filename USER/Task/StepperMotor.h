@@ -41,12 +41,12 @@ typedef enum
 
 typedef enum 
 {
-	RUN_EQUALSPD/*匀速运行阶段*/,
-	RUN_ACCSPD/*加速运行阶段*/,
-	RUN_DECSPD/*减速运行阶段*/,
-	RUN_STOP_BYDEC/*减速停止运行阶段*/, 
-	RUN_STOP_IMMEDIATELY/*立即停止运行阶段*/, 
-	RUN_OVER/*运行结束阶段*/
+	RUN_EQUALSPD,
+	RUN_ACCSPD,
+	RUN_DECSPD,
+	RUN_STOP_BYDEC, 
+	RUN_STOP_IMMEDIATELY, 
+	RUN_OVER,
 }_MOTORRUNSTATE;
 
 
@@ -61,6 +61,14 @@ typedef enum
 	MODE_EQUALSPD/*匀速运行模式*/,
 	MODE_POSITION/*定位模式*/
 }_MOTORRUNMODE;
+
+typedef enum 
+{
+	STEP_CALCULATE,
+	STEP_MOTORRUN,
+	STEP_ADJUSTPOSITION,
+	STEP_IDLE,
+}_MOTORRUNSTEP;
 
 
 typedef enum 
@@ -146,7 +154,10 @@ typedef struct _MOTOR
 	
 	int ActionCode;
 	
+	float PulseEncodeRatio; /*for calcuate only*/
+	
 	TIM_TypeDef* EncoderTIM;
+	TIM_TypeDef* PwmTIM;
 	
 	_MOTORDIR Dir;
 	_MOTORRUNSTATE RunState;
@@ -157,12 +168,14 @@ typedef struct _MOTOR
 	_MOTORMOVETYPE MoveType;
 	_MOTOROUTOFSTEP OutofStepMode;
 	_MOTORACCMODE AccMode;
+	_MOTORRUNSTEP Step;
 	
 	/*Flags during process*/
 	union{ 
 		struct{
 			unsigned enablePwmAdjust	:1; 
 			unsigned firstEnablePwm     :1; 
+			unsigned time1ms		    :1; 
 			unsigned stopByCmd			:1;
 			unsigned taskCompletion		:1; 
 			unsigned HasEncoder			:1;
@@ -196,6 +209,14 @@ extern MOTOR StepperMotor[TOTAL_MOTOR_NUMBER];
 void StepperMotor_Init(void);
 void StepperMotor_InMainLoop(void);
 
+#define MotorFindOriginBySensor(pMOTOR) MotorFindOrigin(pMOTOR, FINDBYSENSOR)
+#define MotorFindOriginByBlock(pMOTOR) MotorFindOrigin(pMOTOR, FINDBYBLOCK)
+#define MotorFindOriginByZsig(pMOTOR) MotorFindOrigin(pMOTOR, FINDBYZSIG)
+
+int MotorGotoA(MOTOR *m, int totalPulse, _MOTORABSORREL absOrRel);
+int MotorFindOrigin(MOTOR *m, _RSTMODE rstmode);
+void MotorAdjustRunningParamPerMS(MOTOR *m);
+int MotorRun(MOTOR *m, _MOTORDIR Dir);
 #endif
   
 

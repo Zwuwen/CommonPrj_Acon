@@ -88,15 +88,15 @@ void CAN_Filter_Config(int *frameSignature, int len)
 		FrameType1 	= (frameSignature[2*i] & 0x80000000)? CAN_RTR_REMOTE : CAN_RTR_DATA;
 		FrameType2	= (frameSignature[2*i] & 0x40000000)? CAN_ID_EXT : CAN_Id_Standard;
 		
-		CAN_FilterInitStructure.CAN_FilterIdHigh   		= 	(((u32)(frameSignature[2*i]|0X80)<<(FrameExtFlag? 3 : 21))&0xffff0000)>>16;		/*module ID*/
-		CAN_FilterInitStructure.CAN_FilterIdLow   		= 	(((u32)(frameSignature[2*i]|0X80)<<(FrameExtFlag? 3 : 21))|(FrameType1)|(FrameType2))&0xffff;
+		CAN_FilterInitStructure.CAN_FilterIdHigh   		= 	(((u32)(frameSignature[2*i])<<(FrameExtFlag? 3 : 21))&0xffff0000)>>16;		/*module ID*/
+		CAN_FilterInitStructure.CAN_FilterIdLow   		= 	(((u32)(frameSignature[2*i])<<(FrameExtFlag? 3 : 21))|(FrameType1)|(FrameType2))&0xffff;
 
 		FrameExtFlag = frameSignature[2*i+1] & 0x40000000;
 		FrameType1 	= (frameSignature[2*i+1] & 0x80000000)? CAN_RTR_REMOTE : CAN_RTR_DATA;
 		FrameType2	= (frameSignature[2*i+1] & 0x40000000)? CAN_ID_EXT : CAN_Id_Standard;
 		
-		CAN_FilterInitStructure.CAN_FilterMaskIdHigh   		= (((u32)(frameSignature[2*i+1]|0X80)<<(FrameType2? 3 : 21))&0xffff0000)>>16;		/*module ID*/
-		CAN_FilterInitStructure.CAN_FilterMaskIdLow   		= (((u32)(frameSignature[2*i+1]|0X80)<<(FrameType2? 3 : 21))|(FrameType1)|(FrameType2))&0xffff;
+		CAN_FilterInitStructure.CAN_FilterMaskIdHigh   		= (((u32)(frameSignature[2*i+1])<<(FrameType2? 3 : 21))&0xffff0000)>>16;		/*module ID*/
+		CAN_FilterInitStructure.CAN_FilterMaskIdLow   		= (((u32)(frameSignature[2*i+1])<<(FrameType2? 3 : 21))|(FrameType1)|(FrameType2))&0xffff;
 		
 		CAN_FilterInitStructure.CAN_FilterFIFOAssignment = 	0;
 		CAN_FilterInitStructure.CAN_FilterActivation = 		ENABLE;	 

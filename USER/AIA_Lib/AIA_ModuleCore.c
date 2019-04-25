@@ -71,7 +71,6 @@ void ModuleCore_Init(CmdProcess_T userDefineFunc)
 	/* core data init */
 	strcpy(ModuleCore.Name, MODULE_NAME);
 	ModuleCore.flag.Bit.init = 1;
-	ModuleCore.address = PersistenceParams.moduleId;
 	ModuleCore.addressChar = IdChar[ModuleCore.address];
 	ModuleCore.normalRecvSignature = ModuleCore.address | 0x80;
 	ModuleCore.boardcastIdChar = '0';
@@ -111,7 +110,7 @@ void ModuleCore_ModifyAddress(int address)
 	CanFilterSignature[0] = ModuleCore.normalRecvSignature;	
 	CanFilterSignature[1] = ModuleCore.boardcastRecvSignature;
 	CAN_Filter_Config(CanFilterSignature, FILTER_FRAMEID_NUMBER);
-	
+
 	__enable_irq();
 	
 }

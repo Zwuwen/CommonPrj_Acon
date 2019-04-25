@@ -450,6 +450,11 @@
               <FileType>1</FileType>
               <FilePath>.\USER\Task\StepperMotorInit.c</FilePath>
             </File>
+            <File>
+              <FileName>StepperMotorIRQ.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\Task\StepperMotorIRQ.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
