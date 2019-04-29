@@ -173,18 +173,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>224</LineNumber>
+          <LineNumber>43</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134241422</Address>
+          <Address>134229362</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\USER\AIA_Lib\AIA_ModuleCore.c</Filename>
+          <Filename>.\USER\Task\StepperMotorTask.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/AIA_Lib/AIA_ModuleCore.c\224</Expression>
+          <Expression>\\STM32_Prj\USER/Task/StepperMotorTask.c\43</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>

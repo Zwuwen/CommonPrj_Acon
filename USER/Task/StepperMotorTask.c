@@ -32,15 +32,15 @@ int AA_Process(AIAMODULE *module)/*RST*/
 
 int AB_Process(AIAMODULE *module)/*ABSMOVE*/
 {
-	
-	return 0;	
+	CHECK_RANGE_PARAM_1(-500000, 500000);
+	return MotorGotoA(&StepperMotor[0], PARAM_1, ABS_COORD);
 }
 
 
 int AC_Process(AIAMODULE *module)/*RELMOVE*/
 {
-	
-	return 0;	
+	CHECK_RANGE_PARAM_1(-500000, 500000);
+	return MotorGotoA(&StepperMotor[0], PARAM_1, REL_COORD);	
 }
 
 

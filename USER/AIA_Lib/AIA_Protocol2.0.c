@@ -66,6 +66,8 @@ void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg)
   * @param  
   * @retval None
   */
+#define CMD_FIRSTCHAR module->fifo.pRecvBuf[5]
+#define CMD_SECONDCHAR module->fifo.pRecvBuf[6]
 void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 {
 	int i;
@@ -88,11 +90,20 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 				if(module->fifo.currRecvLength < 7)
 					continue;
 				
+
+				if((CMD_FIRSTCHAR < 'A') || (CMD_FIRSTCHAR > 'Z') ||		/*first char A~Z*/ 
+				   (CMD_SECONDCHAR < 'A')||(CMD_SECONDCHAR > 'Z'))			/*second char A~Z*/
+					continue;
+				
+				if(isATOZCHAR(CMD_FIRSTCHAR) && isATOZCHAR(CMD_FIRSTCHAR))
+				
 				module->fifo.pRecvBuf[module->fifo.currRecvLength] = '\r';
 				module->fifo.pRecvBuf[module->fifo.currRecvLength+1] = '\0';
 				module->fifo.pRecvBuf[0] = module->fifo.currRecvLength - 2;
 				
-				if((module->fifo.pRecvBuf[5] == 'Z') && (module->fifo.pRecvBuf[6] == 'Z'))
+				
+				
+				if((CMD_FIRSTCHAR == 'Z') && (CMD_SECONDCHAR == 'Z'))
 				{
 					ClearCmdFIFO(&(module->fifo));
 					module->flag.Bit.terminate = 1;

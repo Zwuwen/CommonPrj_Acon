@@ -238,7 +238,7 @@ void StepperMotor_0_Hardware_Init(void)
 void StepperMotor_0_Initialize(void)
 {
 	StepperMotor_0_Hardware_Init();
-	PWM_OCPulse_Init_1(100);
+	PWM_OCPulse_Init_1(1000);
 	StepperMotor_0_Encoder_Init();
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);	
 	
@@ -251,6 +251,7 @@ void StepperMotor_0_Initialize(void)
 	StepperMotor[0].GetNegativeSensor = GetNegativeSensor_1;
 	StepperMotor[0].SetMotorDir = SetMotorDir_1;
 	StepperMotor[0].PWM_Pulse_Change = PWM_Pulse_Change_1;
+	
 	StepperMotor[0].Motor_Enable();
 	
 }

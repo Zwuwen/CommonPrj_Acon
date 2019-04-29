@@ -41,6 +41,10 @@
 								else if(x < L) x = L
 								
 #define IsInRange(x, H, L) ((x<=H) && (x>=L))
+								
+#define isATOZCHAR(X) (((X)>='A')&&((X)<='Z'))
+#define isNUMBERCHAR(X) (((X)>='0')&&((X)<='9'))
+#define isATOZorNUMBERCHAR(X) ((((X)>='A')&&((X)<='Z'))||(((X)>='0')&&((X)<='9')))
 
 								
 #define DELAY_MS(TIMEMS) ModuleCore.delayCount = TIMEMS; while(ModuleCore.delayCount != 0)
