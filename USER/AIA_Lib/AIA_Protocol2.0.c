@@ -94,13 +94,10 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 				if((CMD_FIRSTCHAR < 'A') || (CMD_FIRSTCHAR > 'Z') ||		/*first char A~Z*/ 
 				   (CMD_SECONDCHAR < 'A')||(CMD_SECONDCHAR > 'Z'))			/*second char A~Z*/
 					continue;
-				
-				if(isATOZCHAR(CMD_FIRSTCHAR) && isATOZCHAR(CMD_FIRSTCHAR))
-				
+
 				module->fifo.pRecvBuf[module->fifo.currRecvLength] = '\r';
 				module->fifo.pRecvBuf[module->fifo.currRecvLength+1] = '\0';
 				module->fifo.pRecvBuf[0] = module->fifo.currRecvLength - 2;
-				
 				
 				
 				if((CMD_FIRSTCHAR == 'Z') && (CMD_SECONDCHAR == 'Z'))
