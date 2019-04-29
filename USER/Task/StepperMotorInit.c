@@ -184,6 +184,61 @@ void StepperMotor_0_Encoder_Init(void)
 }
 
 
+int Set_Current_1(_CURRENTTYPE type)
+{
+	u16 duty;
+	
+	switch(type)
+	{
+		case RST_CURRENT:
+			duty = StepperMotor[0].Current;
+		break;
+		
+		case RUN_CURRENT:
+			duty = StepperMotor[0].Current;
+		break;
+		
+		case IDLE_CURRENT:
+			duty = StepperMotor[0].Current / 2;
+			break;
+		case HOLD_CURRENT:
+			duty = StepperMotor[0].Current * 1.5;
+			break;
+		default:
+			duty = StepperMotor[0].Current;
+			break;
+	}
+
+	InRangeAndCoerce(duty, 100, 10);
+	
+	switch(StepperMotor[0].driverCurrent)
+	{
+		case MOTOR_DRIVE_2_0_A:
+			// 实际电流输出还有一个转换公式:1.65/1.1 = 1.5A
+			DAC_SetChannel1Data(DAC_Align_12b_R,((u32)4096*16.5*duty/33)/100);
+		break;
+		case MOTOR_DRIVE_3_0_A:
+			// 实际电流输出还有一个转换公式:3/1.1 = 2.7A     // 57电机驱动板
+			DAC_SetChannel1Data(DAC_Align_12b_R,((u32)4095*30*duty/33)/100);	
+		break;
+		case MOTOR_DRIVE_1_0_A:
+			// 实际电流输出还有一个转换公式:1.1/1.1 = 1A
+			DAC_SetChannel1Data(DAC_Align_12b_R,((u32)4095*11*duty/33)/100);
+		break;
+		case MOTOR_DRIVE_1_2_A:
+			// 实际电流输出还有一个转换公式:1.3/1.1 = 1.18A
+			DAC_SetChannel1Data(DAC_Align_12b_R,((u32)4095*13*duty/33)/100);
+		break;
+		
+		default:
+			break;
+	}
+
+	return duty;
+}
+
+
+
 /**
   * @brief  
   * @param  
@@ -193,7 +248,8 @@ void StepperMotor_0_Hardware_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-
+	DAC_InitTypeDef DAC_InitStructure;
+	
 	/////////////////////GPIO RCC/////////////////////////
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | 
 						   RCC_APB2Periph_GPIOB | 
@@ -231,6 +287,24 @@ void StepperMotor_0_Hardware_Init(void)
     NVIC_Init(&NVIC_InitStructure);
 	///////////////////////////////////////////////////
 	
+	
+	///////////////////DAC///////////////////////////
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	DAC_DeInit();
+	DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
+	DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
+	DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Disable;
+	DAC_Init(DAC_Channel_1, &DAC_InitStructure);
+	DAC_Cmd(DAC_Channel_1, ENABLE);
+	DAC_SetChannel1Data(DAC_Align_12b_R,0);
+	///////////////////////////////////////////////////
+
 }
 
 
@@ -251,9 +325,11 @@ void StepperMotor_0_Initialize(void)
 	StepperMotor[0].GetNegativeSensor = GetNegativeSensor_1;
 	StepperMotor[0].SetMotorDir = SetMotorDir_1;
 	StepperMotor[0].PWM_Pulse_Change = PWM_Pulse_Change_1;
+	StepperMotor[0].Set_Current = Set_Current_1;
+	
 	
 	StepperMotor[0].Motor_Enable();
-	
+	StepperMotor[0].Set_Current(IDLE_CURRENT);	
 }
 
 

@@ -120,6 +120,23 @@ typedef enum
 #define MICROSTEP  	MICRO8
 
 
+typedef enum
+{
+	RST_CURRENT,
+	RUN_CURRENT, 
+	IDLE_CURRENT,
+	HOLD_CURRENT, 
+}_CURRENTTYPE; 
+
+
+// 电机额定电流类型
+typedef enum	_MOTOR_DRIVE_CURRENT_TYPE_
+{
+	MOTOR_DRIVE_2_0_A = 0,	// 电机额定工作电流2.0A，42电机
+	MOTOR_DRIVE_3_0_A = 1,	// 电机额定工作电流3.0A，57电机
+	MOTOR_DRIVE_1_0_A = 2,	// 电机额定工作电流1.0A，42电机
+	MOTOR_DRIVE_1_2_A = 3,	// 电机额定工作电流1.2A，42电机
+}_MOTORDRIVETYPE;
 
 
 typedef struct _MOTOR
@@ -132,6 +149,7 @@ typedef struct _MOTOR
 	int SoftLimitP;
 	int SoftLimitN;
 	int SpdLevel;
+	int Current;
 	
 	int CurrSpd;
 	int CurrAbsPos;
@@ -169,6 +187,7 @@ typedef struct _MOTOR
 	_MOTOROUTOFSTEP OutofStepMode;
 	_MOTORACCMODE AccMode;
 	_MOTORRUNSTEP Step;
+	_MOTORDRIVETYPE driverCurrent;
 	
 	/*Flags during process*/
 	union{ 
@@ -198,6 +217,8 @@ typedef struct _MOTOR
 	BOOL (*GetNegativeSensor)(void);
 	void (*SetMotorDir)(_MOTORDIR Dir);
 	BOOL (*PWM_Pulse_Change)(int Freqs);
+	int (*Set_Current)(_CURRENTTYPE type);
+	
 	
 }MOTOR;
 
