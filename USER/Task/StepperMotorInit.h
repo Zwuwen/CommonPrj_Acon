@@ -36,6 +36,8 @@
 #define CHECK_NEGATIVESENSOR_SIGNAL(pMOTOR)	 ((pMOTOR->Dir == DIR_NEGATIVE) && GET_NEGATIVESENSOR_STATE(pMOTOR))
 #define CHECK_LIMIT_SENSOR_SIGNAL(pMOTOR) (CHECK_POSITIVESENSOR_SIGNAL(pMOTOR) || CHECK_NEGATIVESENSOR_SIGNAL(pMOTOR))
 
+#define CHECK_POSITIVE_SOFTLIMIT(pMOTOR)	 ((pMOTOR->Dir == DIR_POSITIVE) && (pMOTOR->CurrAbsPos >= pMOTOR->SoftLimitP))
+#define CHECK_NEGATIVE_SOFTLIMIT(pMOTOR)	 ((pMOTOR->Dir == DIR_NEGATIVE) && (pMOTOR->CurrAbsPos <= pMOTOR->SoftLimitN))
 
 /* Exported functions ------------------------------------------------------- */
 void StepperMotor_Initialize_All(void);

@@ -137,6 +137,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name>燩畐8\?燩畐8\?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -173,9 +174,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>748</LineNumber>
+          <LineNumber>365</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134229352</Address>
+          <Address>134227662</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -184,119 +185,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\USER\Task\StepperMotor.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\748</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>452</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134227682</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\USER\Task\StepperMotor.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\452</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>364</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134227598</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\USER\Task\StepperMotor.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\364</Expression>
-        </Bp>
-        <Bp>
-          <Number>3</Number>
-          <Type>0</Type>
-          <LineNumber>682</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134229108</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\USER\Task\StepperMotor.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\682</Expression>
-        </Bp>
-        <Bp>
-          <Number>4</Number>
-          <Type>0</Type>
-          <LineNumber>684</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134229128</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\USER\Task\StepperMotor.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\684</Expression>
-        </Bp>
-        <Bp>
-          <Number>5</Number>
-          <Type>0</Type>
-          <LineNumber>683</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134229112</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\USER\Task\StepperMotor.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\683</Expression>
-        </Bp>
-        <Bp>
-          <Number>6</Number>
-          <Type>0</Type>
-          <LineNumber>685</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134229146</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\USER\Task\StepperMotor.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\685</Expression>
-        </Bp>
-        <Bp>
-          <Number>7</Number>
-          <Type>0</Type>
-          <LineNumber>631</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134228930</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\USER\Task\StepperMotor.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\631</Expression>
+          <Expression>\\STM32_Prj\USER/Task/StepperMotor.c\365</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>

@@ -68,6 +68,9 @@ void StepperMotorData_FromPersistence(char *src)
 			StepperMotor[i].EncodeErrOffset = 2000;
 			StepperMotor[i].OriginOffset = 100;
 			
+			StepperMotor[i].SoftLimitN = -10000000;
+			StepperMotor[i].SoftLimitP = 10000000;
+			
 			StepperMotor[i].RunState = RUN_OVER;
 			StepperMotor[i].OriginState = NO_ORIGIN;
 			StepperMotor[i].RunMode = MODE_POSITION;
@@ -82,7 +85,8 @@ void StepperMotorData_FromPersistence(char *src)
 			
 			StepperMotor[i].sEncodePPR = ENCODER_PPR;
 			StepperMotor[i].sMicroStep = StepperMotor[i].MicroType;
-			
+			StepperMotor[i].flag.Allbits = 0;
+			StepperMotor[i].flag.Bit.EnableSensorLimitP = 0;
 		}	
 	}
 	
