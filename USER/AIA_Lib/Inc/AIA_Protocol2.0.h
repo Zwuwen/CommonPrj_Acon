@@ -32,16 +32,16 @@
 
 #define PARAM(i)	(module->recvParams[i]) 
 											
-#define PARAM_1	(module->recvParams[1])
-#define PARAM_2	(module->recvParams[2])
-#define PARAM_3	(module->recvParams[3])	
-#define PARAM_4	(module->recvParams[4])
-#define PARAM_5	(module->recvParams[5])	
-#define PARAM_6	(module->recvParams[6])
-#define PARAM_7	(module->recvParams[7])
-#define PARAM_8	(module->recvParams[8])	
-#define PARAM_9	(module->recvParams[9])
-#define PARAM_10	(module->recvParams[10])	
+#define PARAM_1	(module->recvParams[0])
+#define PARAM_2	(module->recvParams[1])
+#define PARAM_3	(module->recvParams[2])	
+#define PARAM_4	(module->recvParams[3])
+#define PARAM_5	(module->recvParams[4])	
+#define PARAM_6	(module->recvParams[5])
+#define PARAM_7	(module->recvParams[6])
+#define PARAM_8	(module->recvParams[7])	
+#define PARAM_9	(module->recvParams[8])
+#define PARAM_10	(module->recvParams[9])	
 
 #define CHECK_PARAM_NUMBER(TOTAL)			if(module->validParams != TOTAL) return ERR_PARAM
 #define CHECK_RANGE_PARAM(INDEX, PMIN, PMAX)  	if((module->validParams < INDEX) 		|| 	\

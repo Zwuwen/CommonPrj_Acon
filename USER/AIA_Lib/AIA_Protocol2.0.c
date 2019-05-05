@@ -66,6 +66,7 @@ void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg)
   * @param  
   * @retval None
   */
+#define CMD_SEQUENCE module->fifo.pRecvBuf[4]
 #define CMD_FIRSTCHAR module->fifo.pRecvBuf[5]
 #define CMD_SECONDCHAR module->fifo.pRecvBuf[6]
 void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
@@ -93,6 +94,9 @@ void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)
 
 				if((CMD_FIRSTCHAR < 'A') || (CMD_FIRSTCHAR > 'Z') ||		/*first char A~Z*/ 
 				   (CMD_SECONDCHAR < 'A')||(CMD_SECONDCHAR > 'Z'))			/*second char A~Z*/
+					continue;
+				
+				if((CMD_SEQUENCE < '0') || (CMD_SEQUENCE > '9'))			/*sequence is not number.*/
 					continue;
 
 				module->fifo.pRecvBuf[module->fifo.currRecvLength] = '\r';
