@@ -44,15 +44,21 @@ void Motor_Disable_1(void)
 
 BOOL GetPositiveSensor_1(void)
 {
-	return (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14)==0) ? TRUE : FALSE;	
+	return (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15) == 1) ? TRUE : FALSE;	
 }
 
 
 BOOL GetNegativeSensor_1(void)
 {
-	return (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14)==0) ? TRUE : FALSE;	
+	BOOL tmp;
+	tmp = (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 1) ? TRUE : FALSE;	
+	return tmp;
 }
 
+BOOL Get_DriverErr_1(void)
+{
+	return (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4)==0) ? TRUE : FALSE;	
+}
 
 
 void SetMotorDir_1(_MOTORDIR Dir)
@@ -139,7 +145,7 @@ void StepperMotor_0_Encoder_Init(void)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;	//TI1 TI2
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;	//TI1 TI2 
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;       
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   	GPIO_Init(GPIOA, &GPIO_InitStructure); 
@@ -148,7 +154,7 @@ void StepperMotor_0_Encoder_Init(void)
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;       
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   	GPIO_Init(GPIOA, &GPIO_InitStructure); 
-
+	
 	///////////////////NVIC///////////////////////////
 	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
@@ -167,7 +173,7 @@ void StepperMotor_0_Encoder_Init(void)
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;				//向上计数模式   
 	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);	
 
-	TIM_EncoderInterfaceConfig(TIM3, TIM_EncoderMode_TI12,TIM_ICPolarity_Rising,TIM_ICPolarity_Rising);	//编码器接口初始化
+	TIM_EncoderInterfaceConfig(TIM3, TIM_EncoderMode_TI12, TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);	//编码器接口初始化
 
 	TIM_ICStructInit(&TIM_ICInitStructure);
 	TIM_ICInitStructure.TIM_ICFilter = 6; 									//设置滤波器    (0x00~0x0f之间)
@@ -257,19 +263,8 @@ void StepperMotor_0_Hardware_Init(void)
 						   RCC_APB2Periph_AFIO, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;	//Dir
-  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;       
-  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  	GPIO_Init(GPIOB, &GPIO_InitStructure); 
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;	//Enable
-  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;       
-  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  	GPIO_Init(GPIOC, &GPIO_InitStructure); 
-
-	
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15; //Input 0 1
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
@@ -277,7 +272,34 @@ void StepperMotor_0_Hardware_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	// 电机方向引脚配置: m_DIR
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);	
 	
+	// 电机故障输入引脚引脚配置:m_ERR
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;		  
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+	// 电机使能引脚: m_EN
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;		  
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_ResetBits(GPIOC, GPIO_Pin_5); //disable
+
+	//电机细分输出:m_M1,m_M2
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3; 		
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIO_ResetBits(GPIOA, GPIO_Pin_2);
+	GPIO_SetBits(GPIOA, GPIO_Pin_3); //8
 	
 	///////////////////NVIC///////////////////////////
 	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
@@ -317,6 +339,7 @@ void StepperMotor_0_Initialize(void)
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);	
 	
 	StepperMotor[0].EncoderTIM = TIM3;
+	StepperMotor[0].PwmTIM = TIM2;
 	StepperMotor[0].PWM_Disable = PWM_Disable_1;
 	StepperMotor[0].PWM_Enable = PWM_Enable_1;
 	StepperMotor[0].Motor_Enable = Motor_Enable_1;
@@ -326,6 +349,7 @@ void StepperMotor_0_Initialize(void)
 	StepperMotor[0].SetMotorDir = SetMotorDir_1;
 	StepperMotor[0].PWM_Pulse_Change = PWM_Pulse_Change_1;
 	StepperMotor[0].Set_Current = Set_Current_1;
+	StepperMotor[0].Get_DriverErr = Get_DriverErr_1;
 	
 	
 	StepperMotor[0].Motor_Enable();

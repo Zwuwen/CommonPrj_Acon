@@ -31,7 +31,10 @@
 										  pMOTOR->GetNegativeSensor() : FALSE)
 #define GET_ZSIGNAL_STATE(pMOTOR) 		  (pMOTOR->flag.Bit.EnableSensorLimitP ? \
 										  pMOTOR->GetPositiveSensor() : FALSE)
-
+										  
+#define CHECK_POSITIVESENSOR_SIGNAL(pMOTOR)	 ((pMOTOR->Dir == DIR_POSITIVE) && GET_POSITIVESENSOR_STATE(pMOTOR))
+#define CHECK_NEGATIVESENSOR_SIGNAL(pMOTOR)	 ((pMOTOR->Dir == DIR_NEGATIVE) && GET_NEGATIVESENSOR_STATE(pMOTOR))
+#define CHECK_LIMIT_SENSOR_SIGNAL(pMOTOR) (CHECK_POSITIVESENSOR_SIGNAL(pMOTOR) || CHECK_NEGATIVESENSOR_SIGNAL(pMOTOR))
 
 
 /* Exported functions ------------------------------------------------------- */

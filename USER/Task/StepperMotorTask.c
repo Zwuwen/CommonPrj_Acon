@@ -32,15 +32,25 @@ int AA_Process(AIAMODULE *module)/*RST*/
 
 int AB_Process(AIAMODULE *module)/*ABSMOVE*/
 {
+	int ret;
 	CHECK_RANGE_PARAM_1(-500000, 500000);
-	return MotorGotoA(&StepperMotor[0], PARAM_1, ABS_COORD);
+	StepperMotor[0].Set_Current(RUN_CURRENT);
+	ret = MotorGotoA(&StepperMotor[0], PARAM_1, ABS_COORD);
+	StepperMotor[0].Set_Current(IDLE_CURRENT);
+	
+	return ret;
 }
 
 
 int AC_Process(AIAMODULE *module)/*RELMOVE*/
 {
+	int ret;
 	CHECK_RANGE_PARAM_1(-500000, 500000);
-	return MotorGotoA(&StepperMotor[0], PARAM_1, REL_COORD);	
+	StepperMotor[0].Set_Current(RUN_CURRENT);
+	ret = MotorGotoA(&StepperMotor[0], PARAM_1, REL_COORD);
+	StepperMotor[0].Set_Current(IDLE_CURRENT);
+	
+	return ret;
 }
 
 

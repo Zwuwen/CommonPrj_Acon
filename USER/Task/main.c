@@ -83,9 +83,6 @@ int main(void)
 	CanFilterSignature[0] = ModuleCore.normalRecvSignature;	
 	CanFilterSignature[1] = ModuleCore.boardcastRecvSignature;
 	CAN_Filter_Config(CanFilterSignature, FILTER_FRAMEID_NUMBER);
-	
-	
-	
 
 	if (SysTick_Config(SystemCoreClock/1000)) /* 1ms */
 	{ 
@@ -99,7 +96,7 @@ int main(void)
   /* Infinite loop */
 	while (1)
 	{
-		LVPID_PID_Control(TOTAL_PID_NUMBER);
+//		LVPID_PID_Control(TOTAL_PID_NUMBER);
 
 		AIA_Protocol2_Handle(&ModuleCore);
 		

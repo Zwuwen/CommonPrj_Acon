@@ -293,6 +293,8 @@ void ProcessCanCMD(AIAMODULE *module)
 		
 		case CMD4_GET_VERSION:
 			CmdExcuStatus = 1;
+			BOOTFlag.Bit.isReceiveChunk = 0;
+			CurrentSeq = 0;
 			AnswerStr[0] = CmdExcuStatus;
 			AnswerStr[1] = BT_FLASH_PAGESIZE/1024 +'0'; /*Page Size*/
 			AnswerStr[2] = 'K';

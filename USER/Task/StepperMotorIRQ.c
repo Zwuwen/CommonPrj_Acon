@@ -13,7 +13,7 @@
   * <h2><center>&copy; COPYRIGHT 2019 ACONBIO</center></h2>
   ******************************************************************************/
  #include "StepperMotorIRQ.h" 
- 
+ #include "StepperMotorInit.h"
 
 void StepperMotor_Encode_IRQHandler(MOTOR *m);
 void StepperMotor_PWM_IRQHandler(MOTOR *m);
@@ -63,17 +63,18 @@ void StepperMotor_PWM_IRQHandler(MOTOR *m)
 		m->PulseEscape++;
 		if(m->Dir == DIR_POSITIVE)
 			m->CurrAbsPos++;
-		else m->CurrAbsPos--;
+		else 
+			m->CurrAbsPos--;
 		
-		if((m->RunMode == MODE_POSITION) &&
+		if((m->RunMode == MODE_POSITION) &&			/*定位模式下，走完全程*/
 			(m->PulseEscape == m->TotalPulse))
 		{
 			m->ActionCode = PASS;
 			m->RunState = RUN_STOP_IMMEDIATELY;
 		}
-				
-		//if(xmotor.Dir == DIR_POSITIVE && (xmotor.GetPositiveSensor()==TRUE))
-		if(m->GetPositiveSensor()==TRUE)
+		
+		/*两边的极限位传感器*/
+		if( CHECK_LIMIT_SENSOR_SIGNAL(m) )
 		{
 			m->ActionCode = ERR_LIMITSENSOR;
 			m->RunState = RUN_STOP_IMMEDIATELY;

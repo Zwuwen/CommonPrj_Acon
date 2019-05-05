@@ -55,10 +55,8 @@
   */ 
 typedef enum  
 {
-//	FALSE = 0, 
-//	TRUE
-	TRUE = 0, 
-	FALSE
+	FALSE = 0, 
+	TRUE
 }BOOL;
 
 

@@ -218,6 +218,7 @@ typedef struct _MOTOR
 	void (*SetMotorDir)(_MOTORDIR Dir);
 	BOOL (*PWM_Pulse_Change)(int Freqs);
 	int (*Set_Current)(_CURRENTTYPE type);
+	BOOL (*Get_DriverErr)(void);
 	
 	
 }MOTOR;

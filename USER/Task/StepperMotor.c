@@ -61,14 +61,28 @@ void StepperMotorData_FromPersistence(char *src)
 		{
 			StepperMotor[i].SpdStart = 1000;
 			StepperMotor[i].SpdMax = 10000;
-			StepperMotor[i].Acc = 10000;	
+			StepperMotor[i].Acc = 10000;
+			StepperMotor[i].CurrSpd = 1000;	
+			StepperMotor[i].SpdRst = 1000;	
+			StepperMotor[i].Current = 80;
+			StepperMotor[i].EncodeErrOffset = 2000;
+			StepperMotor[i].OriginOffset = 100;
 			
-			StepperMotor[i].sEncodePPR = ENCODER_PPR;
-			StepperMotor[i].flag.Bit.HasEncoder = 1;	
+			StepperMotor[i].RunState = RUN_OVER;
+			StepperMotor[i].OriginState = NO_ORIGIN;
+			StepperMotor[i].RunMode = MODE_POSITION;
+
+			StepperMotor[i].flag.Bit.HasEncoder = 0;	
 			StepperMotor[i].OutofStepMode = RUN_STOP_WHEN_OUTOFSTEP;
 			StepperMotor[i].MoveType = MOVETYPE_LINE;
 			StepperMotor[i].MicroType = MICRO8;
 			StepperMotor[i].StopMode = STOPIMMEDIATELY;		
+			StepperMotor[i].driverCurrent = MOTOR_DRIVE_2_0_A;
+			StepperMotor[i].AccMode = T_CURVE;
+			
+			StepperMotor[i].sEncodePPR = ENCODER_PPR;
+			StepperMotor[i].sMicroStep = StepperMotor[i].MicroType;
+			
 		}	
 	}
 	
@@ -347,7 +361,7 @@ BOOL ReadEncCount(MOTOR *m)
 		c2 = m->sEncodePPR * 4 * m->EncodeCircles + m->EncoderTIM->CNT;
 		m->EncodeCurrAbsPos = m->CurrAbsPos; /*record the abspos.*/
 	}
-	while(((c1>c2) ? c1-c2 : c2-c1) > 2000);
+	while(((c1>c2) ? c1-c2 : c2-c1) > 2000); 
 	m->EncodeCount = c2;
 	
 	return TRUE;
@@ -421,6 +435,7 @@ void CalcMotorRunParam(MOTOR *m, int totalPulse)
 void ChangeRunStateByEncoder(MOTOR *m)
 {
 	int calcEncodeCount;
+	int encodeGap;
 	float tmp;
 	
 	ReadEncCount(m);
@@ -428,10 +443,11 @@ void ChangeRunStateByEncoder(MOTOR *m)
 	tmp = m->EncodeCurrAbsPos;
 	tmp /= m->PulseEncodeRatio;
 	calcEncodeCount = tmp;
-
-	if(((m->EncodeCount > calcEncodeCount) ? 
-		(m->EncodeCount - calcEncodeCount):
-		(calcEncodeCount-m->EncodeCount)) >= m->EncodeErrOffset)
+	
+	encodeGap = (m->EncodeCount > calcEncodeCount) ? (m->EncodeCount - calcEncodeCount):
+													 (calcEncodeCount-m->EncodeCount);
+	
+	if(encodeGap >= m->EncodeErrOffset)
 	{
 		m->ActionCode = ERR_STEPLOSS;
 		
@@ -453,6 +469,7 @@ int MotorGoto(MOTOR *m, int totalPulse, _MOTORABSORREL absOrRel)
 	int totalPulseNum;
 	totalPulseNum = totalPulse;
 	m->RunMode = MODE_POSITION;
+	m->ActionCode = PASS;
 	
 	if(absOrRel == ABS_COORD)
 	{
@@ -483,7 +500,7 @@ int MotorGoto(MOTOR *m, int totalPulse, _MOTORABSORREL absOrRel)
 		return m->ActionCode = PASS;
 	}
 	
-	if(m->Dir == DIR_POSITIVE && (m->GetPositiveSensor() == TRUE))
+	if( CHECK_LIMIT_SENSOR_SIGNAL(m) )
 	{
 		return m->ActionCode = ERR_LIMITSENSOR; 
 	}
@@ -593,7 +610,7 @@ int MotorRun(MOTOR *m, _MOTORDIR Dir)
 
 
 /**
-  * @brief  if current position is in the origin positon, move to negative, 
+  * @brief  if current position is in the origin positon, move to postive, 
   *			and find origin again.
   *			Note: FINDBYZSIG FINDBYTTL mode is special
   * @param  None
@@ -602,15 +619,21 @@ int MotorRun(MOTOR *m, _MOTORDIR Dir)
 int MoveBeforeFindOrigin(MOTOR *m, _RSTMODE rstmode)
 {
 	int ret;
+	int tryTime;
+	
+	tryTime = 0;
 	if((rstmode != FINDBYZSIG) && (rstmode != FINDBYTTL))
 	{
-		while( GET_POSITIVESENSOR_STATE(m) )
+		while( GET_NEGATIVESENSOR_STATE(m) ) /*maybe the current position is in the origin positon*/
 		{
-			ret = MotorGotoA(m, -m->OriginOffset, REL_COORD);
-			if(ret != PASS) return m->ActionCode = ret;
-			DELAY_MS(20);
+			ret = MotorGotoA(m, m->OriginOffset, REL_COORD); /*move away: dir POSTIVE*/
+			if(ret != PASS) 
+				return m->ActionCode = ret;
+			DELAY_MS(50);
+			tryTime++;
+			if(tryTime > 5)
+				return m->ActionCode = ERR_ORIGINSENSOR;
 		}
-		DELAY_MS(50);
 	}
 	else 
 	{
@@ -655,16 +678,19 @@ int DiffRstModeFindOrigin(MOTOR *m, _MOTORDIR dir, _RSTMODE rstmode)
 	switch(rstmode)
 	{
 		case FINDBYSENSOR:
-			ret = MotorRun(m, DIR_POSITIVE);
-			if(ret != ERR_LIMITSENSOR) return m->ActionCode = ret;
+			ret = MotorRun(m, DIR_NEGATIVE);
+			if(ret != ERR_LIMITSENSOR)
+				return m->ActionCode = ret;
 			DELAY_MS(500);
-			ret = MotorGotoA(m, -m->OriginOffset, REL_COORD);
-			if(ret != PASS) return m->ActionCode = ret;	
+			ret = MotorGotoA(m, m->OriginOffset, REL_COORD);
+			if(ret != PASS) 
+				return m->ActionCode = ret;	
 		break;
 		
 		case FINDBYBLOCK:
-			ret = MotorRun(m, DIR_POSITIVE);
-			if(ret != ERR_STEPLOSS) return m->ActionCode = ret;
+			ret = MotorRun(m, DIR_NEGATIVE);
+			if(ret != ERR_STEPLOSS) 
+				return m->ActionCode = ret;
 			
 			DELAY_MS(50);
 //				Wait_ms(30);
@@ -704,27 +730,29 @@ int MotorFindOriginGo(MOTOR *m, _MOTORDIR dir, _RSTMODE rstmode)
 	if((m->MoveType == MOVETYPE_ROTATE) &&
 	   (rstmode != FINDBYBLOCK && rstmode != FINDBYTTL))
 		return ERR_RSTMODE;
-	if((m->MoveType == MOVETYPE_LINE) &&   	//直线运动型的马达不能使用FINDBYZSIG方式来复位 
+	if((m->MoveType == MOVETYPE_LINE) &&   
 	   (rstmode != FINDBYSENSOR && rstmode != FINDBYBLOCK))
 	   return ERR_RSTMODE;
 	   
-	//在FINDBYZSIG方式下，极限传感器将会失效，Z相信号或则是原点信号接到原正极限传感器的位置
+
 	if((rstmode == FINDBYZSIG) || (rstmode == FINDBYTTL))
 	{
 		m->flag.Bit.EnableSensorLimitN = 0;
 		m->flag.Bit.EnableSensorLimitP = 0;
 	}
-	else m->flag.Bit.EnableSensorLimitP = 1;
+	else m->flag.Bit.EnableSensorLimitN = 1;
 	
-	if(dir == DIR_POSITIVE)
+	if(dir == DIR_NEGATIVE)
 	{
-		ret = MoveBeforeFindOrigin(m, rstmode);
-		if(ret != PASS) return m->ActionCode = ret;
+		ret = MoveBeforeFindOrigin(m, rstmode); /*avoid a situation that the current Position is origin.*/
+		if(ret != PASS) 
+			return m->ActionCode = ret;
 		
 		DELAY_MS(50);
 		
 		ret = DiffRstModeFindOrigin(m, dir, rstmode);
-		if(ret != PASS) return m->ActionCode = ret;
+		if(ret != PASS) 
+			return m->ActionCode = ret;
 	}
 	return m->ActionCode = PASS;
 }
@@ -749,7 +777,12 @@ int MotorFindOrigin(MOTOR *m, _RSTMODE rstmode)
 	m->SpdStart = m->SpdRst;
 	
 	m->OriginState = NO_ORIGIN;
-	ret = MotorFindOriginGo(m, DIR_POSITIVE, rstmode);
+	
+	m->Set_Current(RST_CURRENT);
+	
+	ret = MotorFindOriginGo(m, DIR_NEGATIVE, rstmode);
+	
+	m->Set_Current(IDLE_CURRENT);	
 	
 	m->SpdMax = bkupSpdMax;
 	m->SpdStart = bkupSpdStart;	

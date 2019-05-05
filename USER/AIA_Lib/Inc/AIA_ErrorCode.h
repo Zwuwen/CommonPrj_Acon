@@ -33,7 +33,7 @@
 #define 	ERR_STEPLOSS				11
 #define 	ERR_DRVICERR				12
 #define 	ERR_RSTMODE					15
-
+#define 	ERR_ORIGINSENSOR			16
 
 
 
