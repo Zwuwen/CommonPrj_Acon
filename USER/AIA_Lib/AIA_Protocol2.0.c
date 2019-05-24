@@ -66,7 +66,7 @@ void DistributeNewCanFrame_InIrq(CanRxMsg *rxMsg)
   * @param  
   * @retval None
   */
-#define CMD_SEQUENCE module->fifo.pRecvBuf[4]
+#define CMD_SEQUENCE module->fifo.pRecvBuf[4]  
 #define CMD_FIRSTCHAR module->fifo.pRecvBuf[5]
 #define CMD_SECONDCHAR module->fifo.pRecvBuf[6]
 void ReceiveCanFrame_InIrq(AIAMODULE *module, CanRxMsg *rxMsg, int bcflag)

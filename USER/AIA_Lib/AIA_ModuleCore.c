@@ -188,6 +188,39 @@ int XD_Process(AIAMODULE *module)
 	
 	return PLL_SaveParams((char*)&PersistenceParams,sizeof(PersistenceParams));
 }
+
+typedef  void (*pFunVer)(char*,u8 Cmd);
+/**
+  * @brief  XC Read Vertion.
+  * @param  
+  * @retval res
+  */
+int XE_Process(AIAMODULE *module)
+{
+	char VerBuffer[64];
+	if(module->validParams == 0)
+	{
+		module->recvParams[0] = 0;
+	}
+	
+	/*validParams > 0*/
+	switch(module->recvParams[0])
+	{
+		case 1:
+			((pFunVer)(0x08001001))(VerBuffer,1);
+			PrepareResponseBuf(module, "%d,%s", EXECUTE_SUCCESS,VerBuffer);
+			break;
+		default:
+			PrepareResponseBuf(module, "%d,%d,%d,%d", EXECUTE_SUCCESS, FIRST_VER, MIDDLE_VER, TEMP_VER);
+			break;
+	}
+	
+
+	
+	
+	return PREPARE_IN_PROCESS;
+}
+
 /**
   * @brief  
   * @param  
@@ -198,7 +231,7 @@ int ModuleCore_BroadcastCmdProcess(AIAMODULE *module, int cmdword)
 	int ret;
 	switch(cmdword)
 	{
-			CASE_REGISTER_CMD_PROCESS(XA);	/*Read address*/
+		CASE_REGISTER_CMD_PROCESS(XA);	/*Read address*/
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
 		break;		
@@ -222,9 +255,7 @@ int ModuleCore_NormalCmdProcess(AIAMODULE *module, int cmdword)
 		CASE_REGISTER_CMD_PROCESS(XB);	/*Set Address*/
 		CASE_REGISTER_CMD_PROCESS(XC);	/*Read Version*/
 		CASE_REGISTER_CMD_PROCESS(XD);	/*Save Params*/
-		
-		
-		
+		CASE_REGISTER_CMD_PROCESS(XE);	/*Get Boot Ver Params*/
 		
 		default:
 			ret = ERR_CMDNOTIMPLEMENT;
